@@ -1,0 +1,86 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-docker-compose
+        name: Validate docker compose
+        language: script
+        entry: hooks/validate-docker-compose.sh
+        files: docker-compose\..*\.yml$
+
+      - id: validate-circleci-config
+        name: Validate CircleCI Config
+        language: docker_image
+        entry: coreai-app-validate-circleci-config hooks/validate-circleci-config/validate-circleci-config.sh
+        files: ^\.circleci/.*\.yml$
+
+  - repo: https://github.com/python-poetry/poetry
+    rev: "1.8"
+    hooks:
+      # All those hooks make sure that the pyproject.toml and poetry.lock are in sync
+      - id: poetry-check
+        name: Poetry check for api
+        args: ["--lock", "-C", "./src/app/sdm-services/api"]
+        files: "^src/app/sdm-services/api/(pyproject\\.toml|poetry\\.lock)$"
+      - id: poetry-check
+        name: Poetry check for sdm-categ-deep-worker
+        args:
+          [
+            "--lock",
+            "-C",
+            "./src/app/sdm-services/workers/sdm-categ-deep-worker",
+          ]
+        files: "^src/app/sdm-services/workers/sdm-categ-deep-worker/(pyproject\\.toml|poetry\\.lock)$"
+      - id: poetry-check
+        name: Poetry check for sdm-categ-lgbm-worker
+        args:
+          [
+            "--lock",
+            "-C",
+            "./src/app/sdm-services/workers/sdm-categ-lgbm-worker",
+          ]
+        files: "^src/app/sdm-services/workers/sdm-categ-lgbm-worker/(pyproject\\.toml|poetry\\.lock)$"
+      - id: poetry-check
+        name: Poetry check for sdm-extract
+        args: ["--lock", "-C", "./src/lib/sdm-extract"]
+        files: "^src/lib/sdm-extract/(pyproject\\.toml|poetry\\.lock)$"
+      - id: poetry-check
+        name: Poetry check for sdm-categ-zeroshot-worker
+        args:
+          [
+            "--lock",
+            "-C",
+            "./src/app/sdm-services/workers/sdm-categ-zeroshot-worker",
+          ]
+        files: "^src/app/sdm-services/workers/sdm-categ-zeroshot-worker/(pyproject\\.toml|poetry\\.lock)$"
+      - id: poetry-check
+        name: Poetry check for coreai-common
+        args: ["--lock", "-C", "./src/lib/coreai-common"]
+        files: "^src/lib/coreai-common/(pyproject\\.toml|poetry\\.lock)$"
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+        exclude: "templates"
+      - id: check-json
+        exclude: ".vscode/extensions.json|.vscode/launch.json"
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--fix, --config=pyproject.toml]
+      - id: ruff-format
+        args: [--config=pyproject.toml]
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.1
+    hooks:
+      - id: terraform_fmt
+        args:
+          - --args=-no-color
+          - --args=-diff
+          - --args=-write=true
