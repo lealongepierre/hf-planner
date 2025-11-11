@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "hf-planner-backend"
+version = "0.1.0"
+description = "Backend API for Hellfest Planner"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.0"
+sqlmodel = "^0.0.22"
+psycopg2-binary = "^2.9.9"
+alembic = "^1.13.3"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+bcrypt = "^4.0.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+python-dotenv = "^1.0.1"
+pydantic = {extras = ["email"], version = "^2.9.2"}
+pydantic-settings = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+httpx = "^0.27.2"
+ruff = "^0.7.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []

@@ -5,6 +5,7 @@
 
 ## Coding guidelines
 - We use python 3.12
+- Create only what you need: NEVER add files, configurations, or boilerplate without a clear reason to use them, prefer using built-in defaults until customization is required to ease code review and reduce maintenance burden
 - Always use native types: `list[T]`, `dict[K,V]`, `tuple[T,...]`, `set[T]`, `X | None`, `X | Y | Z` instead of importing from `typing` module
 - Only import from `typing` when absolutely necessary: `Protocol`, `TypeVar`, `Generic`, `TypedDict`, `Literal`, `Final`, `ClassVar`, `Annotated`, `Any`, `Never`, `NoReturn`, `cast`, `overload`, `NewType`
 - Define semantic type aliases for domain clarity: `AttributeCode = str`, `LocaleCode = str`, `FamilyCode = str`, `JsonPointerPath = str` for "/attributes/color", `Timestamp = str` for ISO 8601; use type aliases in dict keys and values: `LocalizedLabels = dict[LocaleCode, str]`, `AttributeDict = dict[AttributeCode, Any]`, `FamilyMapping = dict[FamilyCode, list[AttributeCode]]`, `TaxonomyDict = dict[str, Any]`, `ContextMemory = dict[str, Any]`
