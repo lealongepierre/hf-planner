@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import time
 
 from sqlmodel import Field, SQLModel
 
