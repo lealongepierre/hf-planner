@@ -75,6 +75,7 @@ def test_concerts_fixture(session: Session):
         Concert(
             band_name="Metallica",
             day="Friday",
+            festival_day="Friday",
             start_time=time(21, 0),
             end_time=time(23, 0),
             stage="Mainstage 1",
@@ -82,6 +83,7 @@ def test_concerts_fixture(session: Session):
         Concert(
             band_name="Iron Maiden",
             day="Friday",
+            festival_day="Friday",
             start_time=time(19, 0),
             end_time=time(20, 30),
             stage="Mainstage 2",
@@ -89,6 +91,7 @@ def test_concerts_fixture(session: Session):
         Concert(
             band_name="Slayer",
             day="Saturday",
+            festival_day="Saturday",
             start_time=time(21, 0),
             end_time=time(23, 0),
             stage="Mainstage 1",
@@ -96,8 +99,25 @@ def test_concerts_fixture(session: Session):
         Concert(
             band_name="Gojira",
             day="Saturday",
+            festival_day="Saturday",
             start_time=time(19, 0),
             end_time=time(20, 30),
+            stage="The Altar",
+        ),
+        Concert(
+            band_name="Electric Wizard",
+            day="Saturday",
+            festival_day="Friday",
+            start_time=time(1, 30),
+            end_time=time(3, 0),
+            stage="The Temple",
+        ),
+        Concert(
+            band_name="Sleep",
+            day="Sunday",
+            festival_day="Saturday",
+            start_time=time(2, 0),
+            end_time=time(3, 30),
             stage="The Altar",
         ),
     ]
