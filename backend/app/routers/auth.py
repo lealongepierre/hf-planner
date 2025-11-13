@@ -42,5 +42,5 @@ def signin(request: SignInRequest, session: Session = Depends(get_session)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(access_token=access_token)
