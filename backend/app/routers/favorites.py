@@ -71,7 +71,7 @@ def get_user_favorites(
 ):
     statement = (
         select(Concert)
-        .join(Favorite, Favorite.concert_id == Concert.id)
+        .join(Favorite, Favorite.concert_id == Concert.id)  # type: ignore[arg-type]
         .where(Favorite.user_id == current_user.id)
     )
     concerts = session.exec(statement).all()
