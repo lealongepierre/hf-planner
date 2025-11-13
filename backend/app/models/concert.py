@@ -9,6 +9,7 @@ class Concert(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     band_name: str = Field(index=True)
     day: str = Field(index=True)
+    festival_day: str | None = Field(default=None, index=True)
     start_time: time
     end_time: time
     stage: str = Field(index=True)

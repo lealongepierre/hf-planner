@@ -11,6 +11,7 @@ concerts_data = [
     {
         "band_name": "Metallica",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(21, 0),
         "end_time": time(23, 0),
         "stage": "Mainstage 1",
@@ -18,6 +19,7 @@ concerts_data = [
     {
         "band_name": "Iron Maiden",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(21, 30),
         "end_time": time(23, 30),
         "stage": "Mainstage 2",
@@ -25,6 +27,7 @@ concerts_data = [
     {
         "band_name": "Slayer",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(19, 0),
         "end_time": time(20, 30),
         "stage": "Mainstage 1",
@@ -32,6 +35,7 @@ concerts_data = [
     {
         "band_name": "Megadeth",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
         "stage": "The Altar",
@@ -39,6 +43,7 @@ concerts_data = [
     {
         "band_name": "Anthrax",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
         "stage": "The Warzone",
@@ -46,6 +51,7 @@ concerts_data = [
     {
         "band_name": "Testament",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
         "stage": "The Temple",
@@ -53,13 +59,31 @@ concerts_data = [
     {
         "band_name": "Exodus",
         "day": "Friday",
+        "festival_day": "Friday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
         "stage": "The Valley",
     },
     {
+        "band_name": "Electric Wizard",
+        "day": "Saturday",
+        "festival_day": "Friday",
+        "start_time": time(1, 0),
+        "end_time": time(2, 30),
+        "stage": "The Temple",
+    },
+    {
+        "band_name": "Sleep",
+        "day": "Saturday",
+        "festival_day": "Friday",
+        "start_time": time(2, 45),
+        "end_time": time(4, 0),
+        "stage": "The Altar",
+    },
+    {
         "band_name": "Judas Priest",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(21, 0),
         "end_time": time(23, 0),
         "stage": "Mainstage 1",
@@ -67,6 +91,7 @@ concerts_data = [
     {
         "band_name": "Black Sabbath",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(21, 30),
         "end_time": time(23, 30),
         "stage": "Mainstage 2",
@@ -74,6 +99,7 @@ concerts_data = [
     {
         "band_name": "Pantera",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(19, 0),
         "end_time": time(20, 30),
         "stage": "Mainstage 1",
@@ -81,6 +107,7 @@ concerts_data = [
     {
         "band_name": "Gojira",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
         "stage": "The Altar",
@@ -88,6 +115,7 @@ concerts_data = [
     {
         "band_name": "Machine Head",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
         "stage": "The Warzone",
@@ -95,6 +123,7 @@ concerts_data = [
     {
         "band_name": "Lamb of God",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
         "stage": "The Temple",
@@ -102,13 +131,31 @@ concerts_data = [
     {
         "band_name": "Opeth",
         "day": "Saturday",
+        "festival_day": "Saturday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
         "stage": "The Valley",
     },
     {
+        "band_name": "Sunn O)))",
+        "day": "Sunday",
+        "festival_day": "Saturday",
+        "start_time": time(1, 30),
+        "end_time": time(3, 0),
+        "stage": "The Temple",
+    },
+    {
+        "band_name": "Boris",
+        "day": "Sunday",
+        "festival_day": "Saturday",
+        "start_time": time(3, 15),
+        "end_time": time(4, 30),
+        "stage": "The Altar",
+    },
+    {
         "band_name": "Slipknot",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(21, 0),
         "end_time": time(23, 0),
         "stage": "Mainstage 1",
@@ -116,6 +163,7 @@ concerts_data = [
     {
         "band_name": "Tool",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(21, 30),
         "end_time": time(23, 30),
         "stage": "Mainstage 2",
@@ -123,6 +171,7 @@ concerts_data = [
     {
         "band_name": "System of a Down",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(19, 0),
         "end_time": time(20, 30),
         "stage": "Mainstage 1",
@@ -130,6 +179,7 @@ concerts_data = [
     {
         "band_name": "Korn",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
         "stage": "The Altar",
@@ -137,6 +187,7 @@ concerts_data = [
     {
         "band_name": "Deftones",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
         "stage": "The Warzone",
@@ -144,6 +195,7 @@ concerts_data = [
     {
         "band_name": "Mastodon",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
         "stage": "The Temple",
@@ -151,9 +203,26 @@ concerts_data = [
     {
         "band_name": "Sepultura",
         "day": "Sunday",
+        "festival_day": "Sunday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
         "stage": "The Valley",
+    },
+    {
+        "band_name": "Melvins",
+        "day": "Monday",
+        "festival_day": "Sunday",
+        "start_time": time(0, 30),
+        "end_time": time(2, 0),
+        "stage": "The Temple",
+    },
+    {
+        "band_name": "Neurosis",
+        "day": "Monday",
+        "festival_day": "Sunday",
+        "start_time": time(2, 15),
+        "end_time": time(3, 30),
+        "stage": "The Altar",
     },
 ]
 

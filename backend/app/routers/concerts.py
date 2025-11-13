@@ -10,14 +10,17 @@ router = APIRouter(prefix="/api/v1/concerts", tags=["Concerts"])
 
 @router.get("", response_model=list[ConcertResponse])
 def get_concerts(
-    day: str | None = Query(None, description="Filter by day"),
+    day: str | None = Query(None, description="Filter by festival day"),
     stage: str | None = Query(None, description="Filter by stage"),
     session: Session = Depends(get_session),
 ):
     statement = select(Concert)
 
     if day:
-        statement = statement.where(Concert.day == day)
+        statement = statement.where(
+            (Concert.festival_day == day)
+            | ((Concert.festival_day.is_(None)) & (Concert.day == day))
+        )
     if stage:
         statement = statement.where(Concert.stage == stage)
 
