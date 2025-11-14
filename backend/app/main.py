@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, concerts, favorites
+from app.routers import auth, concerts, favorites, users
 
 app = FastAPI(
     title="Hellfest Planner API",
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(concerts.router)
 app.include_router(favorites.router)
+app.include_router(users.router)
 
 
 @app.get("/")
