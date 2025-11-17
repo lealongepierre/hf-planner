@@ -3,6 +3,8 @@ from app.models import Concert, User
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
+# ===== User Listing Tests =====
+
 
 def test_list_users_requires_auth(client: TestClient):
     response = client.get("/api/v1/users")
@@ -32,6 +34,9 @@ def test_list_users_success(
 
     bob = next(u for u in data if u["username"] == "bob")
     assert bob["favorites_public"] is True
+
+
+# ===== Favorites Visibility Toggle Tests =====
 
 
 def test_update_favorites_visibility_requires_auth(client: TestClient):
@@ -68,6 +73,9 @@ def test_update_favorites_visibility_to_private(
     assert response.status_code == 200
     data = response.json()
     assert data["favorites_public"] is False
+
+
+# ===== User Favorites Access Tests =====
 
 
 def test_get_user_favorites_requires_auth(client: TestClient):

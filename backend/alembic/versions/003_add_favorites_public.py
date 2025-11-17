@@ -22,7 +22,9 @@ def upgrade() -> None:
     op.add_column(
         "users", sa.Column("favorites_public", sa.Boolean(), nullable=False, server_default="false")
     )
+    op.create_index(op.f("ix_users_favorites_public"), "users", ["favorites_public"], unique=False)
 
 
 def downgrade() -> None:
+    op.drop_index(op.f("ix_users_favorites_public"), table_name="users")
     op.drop_column("users", "favorites_public")
