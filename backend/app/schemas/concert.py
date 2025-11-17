@@ -1,9 +1,11 @@
 from datetime import time
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ConcertResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     band_name: str
     day: str
@@ -11,6 +13,3 @@ class ConcertResponse(BaseModel):
     start_time: time
     end_time: time
     stage: str
-
-    class Config:
-        from_attributes = True
