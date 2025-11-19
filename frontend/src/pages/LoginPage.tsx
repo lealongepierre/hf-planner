@@ -132,7 +132,7 @@ export function LoginPage() {
           <div className="mt-6">
             <button
               onClick={() => setIsSignup(!isSignup)}
-              className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500"
+              className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500 cursor-pointer"
             >
               {isSignup ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </button>
