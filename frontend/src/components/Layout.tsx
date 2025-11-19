@@ -48,6 +48,9 @@ export function Layout({ children }: LayoutProps) {
                   <Link to="/concerts" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                     🎙️ Concerts
                   </Link>
+                  <Link to="/calendar" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    📅 Calendar
+                  </Link>
                   <Link to="/favorites" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                     ⭐️ My Favorites
                   </Link>
