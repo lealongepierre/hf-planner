@@ -8,6 +8,7 @@ export function ConcertsPage() {
   const [error, setError] = useState('');
   const [dayFilter, setDayFilter] = useState('');
   const [stageFilter, setStageFilter] = useState('');
+  const [favoriteConcertIds, setFavoriteConcertIds] = useState<Set<number>>(new Set());
 
   const loadConcerts = async () => {
     setLoading(true);
@@ -25,16 +26,39 @@ export function ConcertsPage() {
     }
   };
 
+  const loadFavorites = async () => {
+    try {
+      const favorites = await favoritesApi.getFavorites();
+      setFavoriteConcertIds(new Set(favorites.map(concert => concert.id)));
+    } catch (err: any) {
+      console.error('Failed to load favorites:', err);
+    }
+  };
+
   useEffect(() => {
     loadConcerts();
+    loadFavorites();
   }, [dayFilter, stageFilter]);
 
   const handleAddFavorite = async (concertId: number) => {
     try {
       await favoritesApi.addFavorite({ concert_id: concertId });
-      alert('Added to favorites!');
+      setFavoriteConcertIds(prev => new Set([...prev, concertId]));
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to add favorite');
+    }
+  };
+
+  const handleRemoveFavorite = async (concertId: number) => {
+    try {
+      await favoritesApi.removeFavorite(concertId);
+      setFavoriteConcertIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(concertId);
+        return newSet;
+      });
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Failed to remove favorite');
     }
   };
 
@@ -145,12 +169,21 @@ export function ConcertsPage() {
                         {concert.stage}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <button
-                          onClick={() => handleAddFavorite(concert.id)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Add to Favorites
-                        </button>
+                        {favoriteConcertIds.has(concert.id) ? (
+                          <button
+                            onClick={() => handleRemoveFavorite(concert.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Remove from Favorites
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleAddFavorite(concert.id)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            Add to Favorites
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

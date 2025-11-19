@@ -46,13 +46,13 @@ export function Layout({ children }: LayoutProps) {
               {isAuthenticated && (
                 <div className="ml-10 flex items-center space-x-4">
                   <Link to="/concerts" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    Concerts
+                    🎙️ Concerts
                   </Link>
                   <Link to="/favorites" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    My Favorites
+                    ⭐️ My Favorites
                   </Link>
                   <Link to="/users" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    Friends
+                    👥 Friends
                   </Link>
                 </div>
               )}
@@ -61,7 +61,7 @@ export function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <>
                   <span className="text-gray-700 text-sm font-medium">
-                    {username}
+                    👤 {username}
                   </span>
                   <button
                     onClick={handleLogout}
