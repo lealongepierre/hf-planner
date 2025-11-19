@@ -21,6 +21,14 @@
 - Test commands vary per service: `run-core-tests`, `run-api-tests`, `run-worker-tests`, `functest-*` for functional tests, check the justfile for the service you're working on
 - If needed you can port forward to bypass authentication/proxies for local testing: `kubectl port-forward -n <namespace> deployment/<deployment> 8000:8000`
 
+## Testing conventions
+- Test function names follow pattern `test_<endpoint/feature>_<scenario>` to clearly indicate what is being tested: `test_add_favorite_without_auth`, `test_signup_with_existing_user`, `test_get_concerts_filter_by_day`
+- When using `pytest.mark.parametrize` for multiple scenarios, include explicit `test_id` parameter to make test results immediately understandable, NEVER use generic IDs like "success" or "failure": use descriptive IDs like "valid_new_user", "valid_existing_user", "short_username", "wrong_password", "nonexistent_concert"
+- Add docstrings to test functions describing what scenarios are validated, use bullet list format with dash prefix for each scenario: "Valid credentials return 201 with user data", "Username less than 3 characters returns 422 validation error"
+- Verify error messages with case-insensitive matching using `.lower()`: `assert "not found" in response.json()["detail"].lower()`, `assert "already registered" in data["detail"].lower()`
+- For parametrized tests, use conditional checks based on `test_id` to validate scenario-specific assertions: `if test_id == "valid_new_user": assert data["username"] == "newuser"`
+- Structure tests with clear arrange-act-assert pattern: setup test data, make API call, verify status code first, then verify response body/data specific to the test scenario
+
 ## Deployment
 - Deployments are handled by CI/CD pipelines - manual deployment should only be done in dev environment for testing deployment issues with faster feedback loops
 - To debug deployment failures locally: ask user for the last Helm command from CI logs to get the exact image hash (commit SHA) that was built and pushed
