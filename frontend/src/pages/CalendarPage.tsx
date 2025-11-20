@@ -198,7 +198,10 @@ export function CalendarPage() {
                                 >
                                   <div className="flex items-start justify-between gap-1">
                                     <div className="flex-1 min-w-0">
-                                      <div className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}>
+                                      <div
+                                        className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}
+                                        title={concert.band_name}
+                                      >
                                         {concert.band_name}
                                       </div>
                                       <div className={`text-xs ${isFavorite ? 'text-indigo-100' : 'text-gray-600'} mt-1`}>
