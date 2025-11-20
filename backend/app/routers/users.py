@@ -14,6 +14,14 @@ from app.schemas.user import (
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
 
+@router.get("/me", response_model=UserListResponse)
+def get_current_user_info(
+    current_user: User = Depends(get_current_user),
+):
+    """Get the current authenticated user's information."""
+    return current_user
+
+
 @router.get("", response_model=list[UserListResponse])
 def list_users(
     current_user: User = Depends(get_current_user),

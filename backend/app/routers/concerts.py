@@ -19,10 +19,12 @@ def get_concerts(
     if day:
         statement = statement.where(
             (Concert.festival_day == day)
-            | ((Concert.festival_day.is_(None)) & (Concert.day == day))
+            | ((Concert.festival_day.is_(None)) & (Concert.day == day))  # type: ignore[union-attr]
         )
     if stage:
         statement = statement.where(Concert.stage == stage)
+
+    statement = statement.order_by(Concert.band_name)
 
     concerts = session.exec(statement).all()
     return concerts
