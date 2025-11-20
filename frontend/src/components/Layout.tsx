@@ -41,12 +41,12 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex justify-between h-16">
             <div className="flex">
               <Link to="/" className="flex items-center text-xl font-bold text-gray-900">
-                🎸 Hellfest Planner
+                🔥 Hellfest Planner 🔥
               </Link>
               {isAuthenticated && (
                 <div className="ml-10 flex items-center space-x-4">
                   <Link to="/concerts" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    🎙️ Concerts
+                    🎸 Concerts
                   </Link>
                   <Link to="/calendar" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                     📅 Calendar

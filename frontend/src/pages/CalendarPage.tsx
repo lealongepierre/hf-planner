@@ -61,7 +61,12 @@ export function CalendarPage() {
 
   const days = [...new Set(concerts.map(c => c.festival_day || c.day))].sort();
   const filteredConcerts = concerts.filter(c => (c.festival_day || c.day) === selectedDay);
-  const stages = [...new Set(filteredConcerts.map(c => c.stage))].sort();
+
+  const stageOrder = ['Mainstage 1', 'Mainstage 2', 'Warzone', 'Valley', 'Altar', 'Temple'];
+  const allStages = [...new Set(filteredConcerts.map(c => c.stage))];
+  const stages = stageOrder.filter(stage => allStages.includes(stage)).concat(
+    allStages.filter(stage => !stageOrder.includes(stage))
+  );
 
   const getTimeSlots = () => {
     const slots: string[] = [];
@@ -141,7 +146,7 @@ export function CalendarPage() {
                   <div className="sticky top-0 bg-white z-10 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
                     Time
                   </div>
-                  {timeSlots.map((time, idx) => (
+                  {timeSlots.map((time) => (
                     <div
                       key={time}
                       className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500"
