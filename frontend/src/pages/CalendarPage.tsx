@@ -138,19 +138,18 @@ export function CalendarPage() {
       </div>
 
       {selectedDay && (
-        <div className="mt-8 overflow-x-auto">
+        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
             <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
               <div className="flex">
-                <div className="w-16 flex-shrink-0">
-                  <div className="sticky top-0 bg-white z-10 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
+                <div className="w-16 flex-shrink-0 sticky left-0 z-10 bg-white">
+                  <div className="sticky top-0 bg-white z-30 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
                     Time
                   </div>
                   {timeSlots.map((time) => (
                     <div
                       key={time}
-                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500"
-                      style={{ position: 'relative', top: 0 }}
+                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500 bg-white"
                     >
                       {time}
                     </div>
@@ -164,7 +163,7 @@ export function CalendarPage() {
                       className="flex-1 border-l border-gray-300"
                       style={{ position: 'relative', minWidth: '150px', maxWidth: '200px' }}
                     >
-                      <div className="sticky top-0 bg-gray-50 z-10 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2">
+                      <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2">
                         {stage}
                       </div>
 
