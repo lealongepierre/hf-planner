@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout, ProtectedRoute } from './components';
-import { LoginPage, ConcertsPage, FavoritesPage, UsersPage, UserFavoritesPage } from './pages';
+import { LoginPage, ConcertsPage, FavoritesPage, UsersPage, UserFavoritesPage, CalendarPage } from './pages';
 import { authUtils } from './utils/auth';
 
 function App() {
@@ -27,6 +27,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ConcertsPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <CalendarPage />
               </Layout>
             </ProtectedRoute>
           }
