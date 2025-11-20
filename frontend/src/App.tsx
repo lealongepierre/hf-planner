@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout, ProtectedRoute } from './components';
-import { LoginPage, ConcertsPage, FavoritesPage, UsersPage, UserFavoritesPage, CalendarPage } from './pages';
+import { HomePage, LoginPage, ConcertsPage, FavoritesPage, UsersPage, UserFavoritesPage, CalendarPage } from './pages';
 import { authUtils } from './utils/auth';
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Navigate to="/concerts" replace />
+                <HomePage />
               </Layout>
             </ProtectedRoute>
           }
