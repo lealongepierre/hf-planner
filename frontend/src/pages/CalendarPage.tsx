@@ -335,7 +335,7 @@ export function CalendarPage() {
                                     <div className="flex-1 min-w-0">
                                       <div
                                         className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}
-                                        title={concert.band_name}
+                                        title={`${concert.band_name} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
                                       >
                                         {concert.band_name}
                                       </div>
@@ -434,7 +434,7 @@ export function CalendarPage() {
                                     <div className="flex-1 min-w-0">
                                       <div
                                         className="font-semibold text-sm text-white truncate"
-                                        title={`${concert.band_name} - ${concert.stage}`}
+                                        title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
                                       >
                                         {concert.band_name}
                                       </div>
