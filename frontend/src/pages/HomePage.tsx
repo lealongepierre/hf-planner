@@ -22,17 +22,17 @@ export function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black flex flex-col justify-center items-center px-4">
+    <div className="flex flex-col justify-center items-center py-12 px-4">
       <div className="text-center">
-        <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8">
+        <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-8">
           🔥 Hellfest 2026 🔥
         </h1>
 
-        <div className="bg-black bg-opacity-50 rounded-lg p-12 backdrop-blur-sm border-4 border-red-600 shadow-2xl">
-          <div className="text-9xl md:text-[12rem] font-black text-red-500 mb-4 tracking-tight">
+        <div className="bg-gradient-to-br from-red-50 to-gray-100 rounded-lg p-12 border-4 border-red-600 shadow-2xl">
+          <div className="text-8xl md:text-9xl font-black text-red-600 mb-4 tracking-tight">
             J-{daysUntil}
           </div>
-          <div className="text-2xl md:text-3xl text-gray-300 font-semibold">
+          <div className="text-2xl md:text-3xl text-gray-800 font-semibold">
             {daysUntil === 0 ? (
               "C'est aujourd'hui !"
             ) : daysUntil === 1 ? (
@@ -41,12 +41,12 @@ export function HomePage() {
               `${daysUntil} jours avant le festival`
             )}
           </div>
-          <div className="mt-6 text-xl text-gray-400">
+          <div className="mt-6 text-xl text-gray-600">
             18 - 21 juin 2026
           </div>
         </div>
 
-        <div className="mt-12 text-gray-400 text-lg">
+        <div className="mt-12 text-gray-600 text-lg font-medium">
           Clisson, France 🇫🇷
         </div>
       </div>
