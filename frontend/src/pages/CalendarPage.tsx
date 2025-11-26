@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { concertsApi, favoritesApi } from '../api';
 import type { Concert } from '../types';
 
+type CalendarView = 'by-stage' | 'favorites';
+
 export function CalendarPage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
   const [favoriteConcertIds, setFavoriteConcertIds] = useState<Set<number>>(new Set());
+  const [view, setView] = useState<CalendarView>('by-stage');
 
   useEffect(() => {
     loadConcerts();
@@ -59,8 +62,29 @@ export function CalendarPage() {
     }
   };
 
-  const days = [...new Set(concerts.map(c => c.festival_day || c.day))].sort();
+  // Sort days in correct order (Thursday, Friday, Saturday, Sunday)
+  const dayOrder = ['Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const days = [...new Set(concerts.map(c => c.festival_day || c.day))].sort((a, b) => {
+    return dayOrder.indexOf(a) - dayOrder.indexOf(b);
+  });
   const filteredConcerts = concerts.filter(c => (c.festival_day || c.day) === selectedDay);
+
+  // Color mapping for each day
+  const dayColors = [
+    { bg: 'bg-indigo-500', border: 'border-l-4 border-l-indigo-700', text: 'text-indigo-100' },
+    { bg: 'bg-emerald-500', border: 'border-l-4 border-l-emerald-700', text: 'text-emerald-100' },
+    { bg: 'bg-purple-500', border: 'border-l-4 border-l-purple-700', text: 'text-purple-100' },
+    { bg: 'bg-blue-500', border: 'border-l-4 border-l-blue-700', text: 'text-blue-100' },
+    { bg: 'bg-red-500', border: 'border-l-4 border-l-red-700', text: 'text-red-100' },
+    { bg: 'bg-orange-500', border: 'border-l-4 border-l-orange-700', text: 'text-orange-100' },
+    { bg: 'bg-amber-500', border: 'border-l-4 border-l-amber-700', text: 'text-amber-100' },
+    { bg: 'bg-pink-500', border: 'border-l-4 border-l-pink-700', text: 'text-pink-100' },
+  ];
+
+  const getDayColor = (day: string) => {
+    const dayIndex = days.indexOf(day);
+    return dayColors[dayIndex % dayColors.length];
+  };
 
   const stageOrder = ['Mainstage 1', 'Mainstage 2', 'Warzone', 'Valley', 'Altar', 'Temple'];
   const allStages = [...new Set(filteredConcerts.map(c => c.stage))];
@@ -96,6 +120,99 @@ export function CalendarPage() {
     };
   };
 
+  // Helper to calculate overlapping concerts and their columns (Google Calendar style)
+  const calculateOverlaps = (concerts: Concert[]) => {
+    if (concerts.length === 0) return new Map();
+
+    const sorted = [...concerts].sort((a, b) => {
+      const [aHour, aMin] = a.start_time.split(':').map(Number);
+      const [bHour, bMin] = b.start_time.split(':').map(Number);
+      const aAdjusted = (aHour < 12 ? aHour + 24 : aHour) * 60 + aMin;
+      const bAdjusted = (bHour < 12 ? bHour + 24 : bHour) * 60 + bMin;
+      return aAdjusted - bAdjusted;
+    });
+
+    // Helper to get time in minutes
+    const getMinutes = (time: string) => {
+      const [hour, min] = time.split(':').map(Number);
+      return (hour < 12 ? hour + 24 : hour) * 60 + min;
+    };
+
+    // Group concerts into overlap groups (concerts that share any time overlap)
+    const overlapGroups: Concert[][] = [];
+
+    for (const concert of sorted) {
+      const concertStart = getMinutes(concert.start_time);
+      const concertEnd = getMinutes(concert.end_time);
+
+      // Find if this concert overlaps with any existing group
+      let addedToGroup = false;
+      for (const group of overlapGroups) {
+        const hasOverlap = group.some(c => {
+          const cStart = getMinutes(c.start_time);
+          const cEnd = getMinutes(c.end_time);
+          // Check if times overlap (not just touch)
+          return concertStart < cEnd && concertEnd > cStart;
+        });
+
+        if (hasOverlap) {
+          group.push(concert);
+          addedToGroup = true;
+          break;
+        }
+      }
+
+      if (!addedToGroup) {
+        overlapGroups.push([concert]);
+      }
+    }
+
+    // Now assign columns within each overlap group
+    const concertColumns = new Map<number, { column: number, totalColumns: number }>();
+
+    for (const group of overlapGroups) {
+      if (group.length === 1) {
+        // Single concert, takes full width
+        concertColumns.set(group[0].id, { column: 0, totalColumns: 1 });
+      } else {
+        // Multiple overlapping concerts - use column algorithm
+        const columns: Concert[][] = [];
+
+        for (const concert of group) {
+          const concertStart = getMinutes(concert.start_time);
+
+          let placed = false;
+          for (const column of columns) {
+            // Check if this concert can fit in this column (no overlap with any concert in column)
+            const canFit = column.every(c => {
+              const cEnd = getMinutes(c.end_time);
+              return concertStart >= cEnd;
+            });
+
+            if (canFit) {
+              column.push(concert);
+              placed = true;
+              break;
+            }
+          }
+
+          if (!placed) {
+            columns.push([concert]);
+          }
+        }
+
+        const totalColumns = columns.length;
+        columns.forEach((column, idx) => {
+          column.forEach(concert => {
+            concertColumns.set(concert.id, { column: idx, totalColumns });
+          });
+        });
+      }
+    }
+
+    return concertColumns;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -121,36 +238,54 @@ export function CalendarPage() {
         </div>
       )}
 
-      <div className="mt-6">
-        <label htmlFor="day-select" className="block text-sm font-medium text-gray-700 mb-2">
-          Select Day
-        </label>
-        <select
-          id="day-select"
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
-          className="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-        >
-          {days.map(day => (
-            <option key={day} value={day}>{day}</option>
-          ))}
-        </select>
+      <div className="mt-6 flex gap-6 items-end">
+        <div>
+          <label htmlFor="view-select" className="block text-sm font-medium text-gray-700 mb-2">
+            View
+          </label>
+          <select
+            id="view-select"
+            value={view}
+            onChange={(e) => setView(e.target.value as CalendarView)}
+            className="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="by-stage">By Stage</option>
+            <option value="favorites">My Favorites</option>
+          </select>
+        </div>
+
+        {view === 'by-stage' && (
+          <div>
+            <label htmlFor="day-select" className="block text-sm font-medium text-gray-700 mb-2">
+              Select Day
+            </label>
+            <select
+              id="day-select"
+              value={selectedDay}
+              onChange={(e) => setSelectedDay(e.target.value)}
+              className="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            >
+              {days.map(day => (
+                <option key={day} value={day}>{day}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {selectedDay && (
-        <div className="mt-8 overflow-x-auto">
+      {view === 'by-stage' && selectedDay && (
+        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
             <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
               <div className="flex">
-                <div className="w-16 flex-shrink-0">
-                  <div className="sticky top-0 bg-white z-10 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
+                <div className="w-16 flex-shrink-0 sticky left-0 z-10 bg-white">
+                  <div className="sticky top-0 bg-white z-30 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
                     Time
                   </div>
                   {timeSlots.map((time) => (
                     <div
                       key={time}
-                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500"
-                      style={{ position: 'relative', top: 0 }}
+                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500 bg-white"
                     >
                       {time}
                     </div>
@@ -164,7 +299,7 @@ export function CalendarPage() {
                       className="flex-1 border-l border-gray-300"
                       style={{ position: 'relative', minWidth: '150px', maxWidth: '200px' }}
                     >
-                      <div className="sticky top-0 bg-gray-50 z-10 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2">
+                      <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2 shadow-sm">
                         {stage}
                       </div>
 
@@ -200,7 +335,7 @@ export function CalendarPage() {
                                     <div className="flex-1 min-w-0">
                                       <div
                                         className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}
-                                        title={concert.band_name}
+                                        title={`${concert.band_name} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
                                       >
                                         {concert.band_name}
                                       </div>
@@ -223,6 +358,109 @@ export function CalendarPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {view === 'favorites' && (
+        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
+          <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
+            <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
+              <div className="flex">
+                <div className="w-16 flex-shrink-0 sticky left-0 z-10 bg-white">
+                  <div className="sticky top-0 bg-white z-30 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
+                    Time
+                  </div>
+                  {timeSlots.map((time) => (
+                    <div
+                      key={time}
+                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500 bg-white"
+                    >
+                      {time}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex-1 flex relative">
+                  {days.map((day) => {
+                    const dayConcerts = concerts
+                      .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id));
+                    const overlaps = calculateOverlaps(dayConcerts);
+                    const dayColor = getDayColor(day);
+
+                    return (
+                      <div
+                        key={day}
+                        className="flex-1 border-l border-gray-300"
+                        style={{ position: 'relative', minWidth: '250px', maxWidth: '350px' }}
+                      >
+                        <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2 shadow-sm">
+                          {day}
+                        </div>
+
+                        <div className="relative" style={{ height: `${timeSlots.length * 80}px` }}>
+                          {timeSlots.map((_, idx) => (
+                            <div
+                              key={idx}
+                              className="absolute w-full h-20 border-b border-gray-100"
+                              style={{ top: `${idx * 80}px` }}
+                            />
+                          ))}
+
+                          {dayConcerts.map((concert) => {
+                            const position = getConcertPosition(concert);
+                            const overlap = overlaps.get(concert.id);
+                            const widthPercent = overlap ? 100 / overlap.totalColumns : 100;
+                            const leftPercent = overlap ? (overlap.column * widthPercent) : 0;
+
+                            return (
+                              <div
+                                key={concert.id}
+                                className="absolute px-1"
+                                style={{
+                                  top: position.top,
+                                  left: `${leftPercent}%`,
+                                  width: `${widthPercent}%`,
+                                }}
+                              >
+                                <div
+                                  className={`${dayColor.bg} border border-white border-l-4 ${dayColor.border} p-2 rounded shadow-sm hover:opacity-90 transition-all cursor-pointer overflow-hidden relative`}
+                                  style={{ height: position.height, minHeight: '40px' }}
+                                >
+                                  <div className="flex items-start justify-between gap-1">
+                                    <div className="flex-1 min-w-0">
+                                      <div
+                                        className="font-semibold text-sm text-white truncate"
+                                        title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
+                                      >
+                                        {concert.band_name}
+                                      </div>
+                                      <div className={`text-xs ${dayColor.text} mt-1 truncate`} title={concert.stage}>
+                                        {concert.stage}
+                                      </div>
+                                      <div className={`text-xs ${dayColor.text}`}>
+                                        {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                      className="flex-shrink-0 text-lg hover:scale-125 transition-transform"
+                                      title="Remove from favorites"
+                                    >
+                                      ⭐
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
