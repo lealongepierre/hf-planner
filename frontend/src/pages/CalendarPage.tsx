@@ -481,19 +481,23 @@ export function CalendarPage() {
 
                 <div className="flex-1 flex relative">
                   {days.map((day) => {
-                    const userFavorites = concerts
-                      .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id));
+                    // Collect ALL unique concerts that are favorited by user or any friend
+                    const concertIdSet = new Set<number>();
 
-                    // Collect all friends' favorites for this day
-                    const allFriendFavorites: Concert[] = [];
+                    // Add user's favorites
+                    concerts
+                      .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id))
+                      .forEach(c => concertIdSet.add(c.id));
+
+                    // Add friends' favorites
                     for (const [username, favIds] of friendsFavorites.entries()) {
-                      const friendDayFavorites = concerts.filter(
-                        c => (c.festival_day || c.day) === day && favIds.has(c.id)
-                      );
-                      allFriendFavorites.push(...friendDayFavorites);
+                      concerts
+                        .filter(c => (c.festival_day || c.day) === day && favIds.has(c.id))
+                        .forEach(c => concertIdSet.add(c.id));
                     }
 
-                    const allDayConcerts = [...userFavorites, ...allFriendFavorites];
+                    // Get unique concert objects
+                    const allDayConcerts = concerts.filter(c => concertIdSet.has(c.id));
                     const overlaps = calculateOverlaps(allDayConcerts);
                     const dayColor = getDayColor(day);
 
@@ -501,7 +505,7 @@ export function CalendarPage() {
                       <div
                         key={day}
                         className="flex-1 border-l border-gray-300"
-                        style={{ position: 'relative', minWidth: '250px', maxWidth: '350px' }}
+                        style={{ position: 'relative', minWidth: '400px', maxWidth: '500px' }}
                       >
                         <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2 shadow-sm">
                           {day}
@@ -523,12 +527,11 @@ export function CalendarPage() {
                             const leftPercent = overlap ? (overlap.column * widthPercent) : 0;
                             const isUserFavorite = favoriteConcertIds.has(concert.id);
 
-                            // Find which friend (if any) has this concert favorited
-                            let owningFriendUsername: string | null = null;
+                            // Find ALL friends who have favorited this concert
+                            const friendsWhoFavorited: string[] = [];
                             for (const [username, favIds] of friendsFavorites.entries()) {
                               if (favIds.has(concert.id)) {
-                                owningFriendUsername = username;
-                                break;
+                                friendsWhoFavorited.push(username);
                               }
                             }
 
@@ -538,9 +541,9 @@ export function CalendarPage() {
                             let textColor = dayColor.text;
                             let opacity = '';
 
-                            if (owningFriendUsername && !isUserFavorite) {
-                              // Friend's favorite only - use friend-specific color
-                              const friendColor = getFriendColor(owningFriendUsername);
+                            if (friendsWhoFavorited.length > 0 && !isUserFavorite) {
+                              // Friend's favorite only - use first friend's color
+                              const friendColor = getFriendColor(friendsWhoFavorited[0]);
                               bgColor = friendColor.bg;
                               borderColor = friendColor.border;
                               textColor = friendColor.text;
@@ -559,45 +562,45 @@ export function CalendarPage() {
                               >
                                 <div
                                   className={`${bgColor} ${opacity} border border-white ${borderColor} p-2 rounded shadow-sm hover:opacity-90 transition-all cursor-pointer overflow-hidden relative`}
-                                  style={{ height: position.height, minHeight: '40px' }}
+                                  style={{ height: position.height, minHeight: '60px' }}
                                 >
-                                  <div className="flex items-start justify-between gap-1">
-                                    <div className="flex-1 min-w-0">
+                                  <div className="flex flex-col h-full">
+                                    <div className="flex items-start justify-between gap-1 mb-1">
                                       <div
-                                        className="font-semibold text-sm text-white truncate"
-                                        title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}${owningFriendUsername && !isUserFavorite ? ` (${owningFriendUsername}'s favorite)` : ''}`}
+                                        className="font-semibold text-sm text-white truncate flex-1"
+                                        title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}${friendsWhoFavorited.length > 0 ? ` (also favorited by: ${friendsWhoFavorited.join(', ')})` : ''}`}
                                       >
                                         {concert.band_name}
                                       </div>
-                                      <div className={`text-xs ${textColor} mt-1 truncate`} title={concert.stage}>
-                                        {concert.stage}
-                                      </div>
-                                      <div className={`text-xs ${textColor}`}>
-                                        {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
-                                      </div>
-                                      {owningFriendUsername && !isUserFavorite && (
-                                        <div className={`text-xs ${textColor} italic mt-0.5`}>
-                                          {owningFriendUsername}
-                                        </div>
+                                      {isUserFavorite && (
+                                        <button
+                                          onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                          className="flex-shrink-0 text-base hover:scale-125 transition-transform"
+                                          title="Remove from favorites"
+                                        >
+                                          ⭐
+                                        </button>
+                                      )}
+                                      {!isUserFavorite && friendsWhoFavorited.length > 0 && (
+                                        <button
+                                          onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                          className="flex-shrink-0 text-base hover:scale-125 transition-transform"
+                                          title="Add to your favorites"
+                                        >
+                                          ☆
+                                        </button>
                                       )}
                                     </div>
-                                    {isUserFavorite && (
-                                      <button
-                                        onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                        className="flex-shrink-0 text-lg hover:scale-125 transition-transform"
-                                        title="Remove from favorites"
-                                      >
-                                        ⭐
-                                      </button>
-                                    )}
-                                    {!isUserFavorite && owningFriendUsername && (
-                                      <button
-                                        onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                        className="flex-shrink-0 text-lg hover:scale-125 transition-transform"
-                                        title="Add to your favorites"
-                                      >
-                                        ☆
-                                      </button>
+                                    <div className={`text-xs ${textColor} truncate`} title={concert.stage}>
+                                      {concert.stage}
+                                    </div>
+                                    <div className={`text-xs ${textColor}`}>
+                                      {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
+                                    </div>
+                                    {friendsWhoFavorited.length > 0 && (
+                                      <div className={`text-xs ${textColor} italic mt-0.5`}>
+                                        {isUserFavorite ? '👥 ' : ''}{friendsWhoFavorited.join(', ')}
+                                      </div>
                                     )}
                                   </div>
                                 </div>
