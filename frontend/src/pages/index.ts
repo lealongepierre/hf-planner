@@ -1,3 +1,4 @@
+export { HomePage } from './HomePage';
 export { LoginPage } from './LoginPage';
 export { ConcertsPage } from './ConcertsPage';
 export { CalendarPage } from './CalendarPage';
