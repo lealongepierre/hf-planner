@@ -525,7 +525,7 @@ export function CalendarPage() {
                       <div
                         key={day}
                         className="flex-1 border-l border-gray-300"
-                        style={{ position: 'relative', minWidth: '400px', maxWidth: '500px' }}
+                        style={{ position: 'relative', minWidth: '300px', maxWidth: '500px' }}
                       >
                         <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2 shadow-sm">
                           {day}
