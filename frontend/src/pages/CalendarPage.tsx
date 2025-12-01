@@ -443,7 +443,7 @@ export function CalendarPage() {
                                     isFavorite
                                       ? 'bg-indigo-500 border-l-4 border-indigo-700'
                                       : 'bg-indigo-100 border-l-4 border-indigo-600'
-                                  } p-2 rounded shadow-sm hover:opacity-90 transition-all cursor-pointer overflow-hidden relative`}
+                                  } p-2 rounded shadow-sm hover:opacity-90 transition-all overflow-hidden relative`}
                                   style={{ height: position.height, minHeight: '40px' }}
                                 >
                                   <div className="flex items-start justify-between gap-1">
@@ -460,7 +460,7 @@ export function CalendarPage() {
                                     </div>
                                     <button
                                       onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                      className="flex-shrink-0 text-lg hover:scale-125 transition-transform"
+                                      className="flex-shrink-0 text-lg hover:scale-125 transition-transform cursor-pointer"
                                       title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                                     >
                                       {isFavorite ? '⭐' : '☆'}
@@ -562,7 +562,7 @@ export function CalendarPage() {
                               >
                                 {/* Single block with horizontal color sections for all users */}
                                 <div
-                                  className="relative border border-white rounded shadow-sm hover:opacity-90 transition-all cursor-pointer overflow-hidden flex"
+                                  className="relative border border-white rounded shadow-sm hover:opacity-90 transition-all overflow-hidden flex"
                                   style={{ height: position.height, minHeight: '60px' }}
                                 >
                                   {usersWhoFavorited.map((user, idx) => {
@@ -589,7 +589,7 @@ export function CalendarPage() {
                                                 {isUserFavorite && (
                                                   <button
                                                     onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform"
+                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
                                                     title="Remove from favorites"
                                                   >
                                                     ⭐
@@ -598,7 +598,7 @@ export function CalendarPage() {
                                                 {!isUserFavorite && usersWhoFavorited.length > 0 && (
                                                   <button
                                                     onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform"
+                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
                                                     title="Add to your favorites"
                                                   >
                                                     ☆
