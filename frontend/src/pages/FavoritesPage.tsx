@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { favoritesApi, usersApi } from '../api';
 import type { Concert } from '../types';
+import { useUser } from '../contexts/UserContext';
 
 export function FavoritesPage() {
   const [favorites, setFavorites] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const { isPublic, setIsPublic } = useUser();
 
   const loadFavorites = async () => {
     setLoading(true);

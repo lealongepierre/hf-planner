@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authUtils } from '../utils/auth';
 import { usersApi } from '../api';
+import { useUser } from '../contexts/UserContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,26 +10,19 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const isAuthenticated = authUtils.isAuthenticated();
-  const [username, setUsername] = useState<string>('');
+  const { username, isPublic, setIsPublic } = useUser();
 
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      if (isAuthenticated) {
-        try {
-          const user = await usersApi.getCurrentUser();
-          setUsername(user.username);
-        } catch (err) {
-          console.error('Failed to fetch current user:', err);
-        }
-      }
-    };
-
-    fetchCurrentUser();
-  }, [isAuthenticated]);
+  const handleToggleVisibility = async () => {
+    try {
+      await usersApi.updateFavoritesVisibility({ public: !isPublic });
+      setIsPublic(!isPublic);
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || 'Failed to update visibility');
+    }
+  };
 
   const handleLogout = () => {
     authUtils.clearToken();
-    setUsername('');
     navigate('/login');
   };
 
@@ -63,6 +56,15 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <button
+                    onClick={handleToggleVisibility}
+                    className={`inline-flex items-center px-3 py-1 border border-transparent rounded-md text-xs font-medium cursor-pointer transition-colors ${
+                      isPublic ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                    title={isPublic ? 'Your favorites are public' : 'Your favorites are private'}
+                  >
+                    {isPublic ? '🔓 Public' : '🔒 Private'}
+                  </button>
                   <span className="text-gray-700 text-sm font-medium">
                     👤 {username}
                   </span>
