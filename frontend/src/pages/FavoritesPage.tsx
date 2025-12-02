@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { favoritesApi, usersApi } from '../api';
+import { favoritesApi } from '../api';
 import type { Concert } from '../types';
+import { useUser } from '../contexts/UserContext';
 
 export function FavoritesPage() {
   const [favorites, setFavorites] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const { isPublic, toggleVisibility } = useUser();
 
   const loadFavorites = async () => {
     setLoading(true);
@@ -34,15 +35,6 @@ export function FavoritesPage() {
     }
   };
 
-  const handleToggleVisibility = async () => {
-    try {
-      await usersApi.updateFavoritesVisibility({ public: !isPublic });
-      setIsPublic(!isPublic);
-    } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update visibility');
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -62,7 +54,7 @@ export function FavoritesPage() {
         </div>
         <div className="mt-4 sm:mt-0">
           <button
-            onClick={handleToggleVisibility}
+            onClick={toggleVisibility}
             className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
               isPublic ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}

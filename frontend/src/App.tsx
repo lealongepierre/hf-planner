@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout, ProtectedRoute } from './components';
 import { HomePage, LoginPage, ConcertsPage, FavoritesPage, UsersPage, UserFavoritesPage, CalendarPage } from './pages';
 import { authUtils } from './utils/auth';
+import { UserProvider } from './contexts/UserContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <UserProvider>
+        <Routes>
         {/* Public route */}
         <Route path="/login" element={<LoginPage />} />
 
@@ -84,6 +86,7 @@ function App() {
           }
         />
       </Routes>
+      </UserProvider>
     </BrowserRouter>
   );
 }
