@@ -8,6 +8,7 @@ interface UserContextType {
   isPublic: boolean;
   setIsPublic: (value: boolean) => void;
   refreshUser: () => Promise<void>;
+  toggleVisibility: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,12 +30,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const toggleVisibility = async () => {
+    try {
+      await usersApi.updateFavoritesVisibility({ public: !isPublic });
+      setIsPublic(!isPublic);
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || 'Failed to update visibility');
+    }
+  };
+
   useEffect(() => {
     refreshUser();
   }, [isAuthenticated]);
 
   return (
-    <UserContext.Provider value={{ username, isPublic, setIsPublic, refreshUser }}>
+    <UserContext.Provider value={{ username, isPublic, setIsPublic, refreshUser, toggleVisibility }}>
       {children}
     </UserContext.Provider>
   );

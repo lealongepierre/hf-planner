@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { authUtils } from '../utils/auth';
-import { usersApi } from '../api';
 import { useUser } from '../contexts/UserContext';
 
 interface LayoutProps {
@@ -10,16 +9,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const isAuthenticated = authUtils.isAuthenticated();
-  const { username, isPublic, setIsPublic } = useUser();
-
-  const handleToggleVisibility = async () => {
-    try {
-      await usersApi.updateFavoritesVisibility({ public: !isPublic });
-      setIsPublic(!isPublic);
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || 'Failed to update visibility');
-    }
-  };
+  const { username, isPublic, toggleVisibility } = useUser();
 
   const handleLogout = () => {
     authUtils.clearToken();
@@ -57,7 +47,7 @@ export function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <>
                   <button
-                    onClick={handleToggleVisibility}
+                    onClick={toggleVisibility}
                     className={`inline-flex items-center px-3 py-1 border border-transparent rounded-md text-xs font-medium cursor-pointer transition-colors ${
                       isPublic ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                     }`}
