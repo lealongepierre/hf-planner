@@ -16,6 +16,7 @@ export function CalendarPage() {
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<Set<string>>(new Set());
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [friendsPopup, setFriendsPopup] = useState<{ concertId: number; bandName: string } | null>(null);
+  const [concertInfoPopup, setConcertInfoPopup] = useState<{ bandName: string; startTime: string; endTime: string; stage: string } | null>(null);
 
   useEffect(() => {
     loadConcerts();
@@ -472,10 +473,20 @@ export function CalendarPage() {
                                   style={{ height: position.height, minHeight: '40px' }}
                                 >
                                   <div className="flex items-start justify-between gap-1">
-                                    <div className="flex-1 min-w-0">
+                                    <div
+                                      className="flex-1 min-w-0 cursor-pointer"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setConcertInfoPopup({
+                                          bandName: concert.band_name,
+                                          startTime: concert.start_time,
+                                          endTime: concert.end_time,
+                                          stage: concert.stage
+                                        });
+                                      }}
+                                    >
                                       <div
-                                        className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}
-                                        title={`${concert.band_name} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
+                                        className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate hover:underline`}
                                       >
                                         {concert.band_name}
                                       </div>
@@ -703,6 +714,49 @@ export function CalendarPage() {
                   <span>{friend}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Concert Info Popup Modal */}
+      {concertInfoPopup && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setConcertInfoPopup(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{concertInfoPopup.bandName}</h3>
+              </div>
+              <button
+                onClick={() => setConcertInfoPopup(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 text-gray-700">
+                <span className="text-lg">🕐</span>
+                <div>
+                  <p className="text-sm text-gray-500">Time</p>
+                  <p className="font-medium">
+                    {concertInfoPopup.startTime.slice(0, 5)} - {concertInfoPopup.endTime.slice(0, 5)}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 text-gray-700">
+                <span className="text-lg">🎪</span>
+                <div>
+                  <p className="text-sm text-gray-500">Stage</p>
+                  <p className="font-medium">{concertInfoPopup.stage}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
