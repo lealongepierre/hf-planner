@@ -15,6 +15,8 @@ export function CalendarPage() {
   const [users, setUsers] = useState<UserListResponse[]>([]);
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<Set<string>>(new Set());
   const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [friendsPopup, setFriendsPopup] = useState<{ concertId: number; bandName: string } | null>(null);
+  const [concertInfoPopup, setConcertInfoPopup] = useState<{ bandName: string; startTime: string; endTime: string; stage: string } | null>(null);
 
   useEffect(() => {
     loadConcerts();
@@ -24,8 +26,8 @@ export function CalendarPage() {
   }, []);
 
   useEffect(() => {
-    loadAllSelectedFriendsFavorites();
-  }, [selectedFriendUsernames]);
+    loadAllFriendsFavorites();
+  }, [users, currentUsername]);
 
   const loadCurrentUser = async () => {
     try {
@@ -45,15 +47,20 @@ export function CalendarPage() {
     }
   };
 
-  const loadAllSelectedFriendsFavorites = async () => {
+  const loadAllFriendsFavorites = async () => {
+    // Get all friends with public favorites
+    const friendsWithPublicFavorites = users.filter(
+      u => u.favorites_public && u.username !== currentUsername
+    );
+
     const newFriendsFavorites = new Map<string, Set<number>>();
 
-    for (const username of selectedFriendUsernames) {
+    for (const user of friendsWithPublicFavorites) {
       try {
-        const favorites = await usersApi.getUserFavorites(username);
-        newFriendsFavorites.set(username, new Set(favorites.map(concert => concert.id)));
+        const favorites = await usersApi.getUserFavorites(user.username);
+        newFriendsFavorites.set(user.username, new Set(favorites.map(concert => concert.id)));
       } catch (err: any) {
-        console.error(`Failed to load favorites for ${username}:`, err);
+        console.error(`Failed to load favorites for ${user.username}:`, err);
       }
     }
 
@@ -307,6 +314,22 @@ export function CalendarPage() {
     return users;
   };
 
+  const getFriendsWhoFavorited = (concertId: number): string[] => {
+    const allUsers = getUsersWhoFavorited(concertId);
+    return allUsers.filter(u => !u.isCurrentUser).map(u => u.username);
+  };
+
+  const formatFriendsText = (friends: string[], maxLength: number = 25): { text: string, isTruncated: boolean } => {
+    if (friends.length === 0) return { text: '', isTruncated: false };
+
+    const fullText = friends.join(', ');
+    if (fullText.length <= maxLength) {
+      return { text: fullText, isTruncated: false };
+    }
+
+    return { text: fullText.slice(0, maxLength) + '...', isTruncated: true };
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -380,7 +403,7 @@ export function CalendarPage() {
                     onChange={() => handleToggleFriendSelection(user.username)}
                     className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-gray-700">👤 {user.username}</span>
+                  <span className="text-sm text-gray-700">{user.username}</span>
                 </label>
               ))}
             </div>
@@ -432,6 +455,9 @@ export function CalendarPage() {
                           .map((concert) => {
                             const position = getConcertPosition(concert);
                             const isFavorite = favoriteConcertIds.has(concert.id);
+                            const friendsList = getFriendsWhoFavorited(concert.id);
+                            const friendsDisplay = formatFriendsText(friendsList);
+
                             return (
                               <div
                                 key={concert.id}
@@ -447,10 +473,20 @@ export function CalendarPage() {
                                   style={{ height: position.height, minHeight: '40px' }}
                                 >
                                   <div className="flex items-start justify-between gap-1">
-                                    <div className="flex-1 min-w-0">
+                                    <div
+                                      className="flex-1 min-w-0 cursor-pointer"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setConcertInfoPopup({
+                                          bandName: concert.band_name,
+                                          startTime: concert.start_time,
+                                          endTime: concert.end_time,
+                                          stage: concert.stage
+                                        });
+                                      }}
+                                    >
                                       <div
-                                        className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate`}
-                                        title={`${concert.band_name} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)}`}
+                                        className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate hover:underline`}
                                       >
                                         {concert.band_name}
                                       </div>
@@ -466,6 +502,19 @@ export function CalendarPage() {
                                       {isFavorite ? '⭐' : '☆'}
                                     </button>
                                   </div>
+
+                                  {/* Friend indicator */}
+                                  {friendsList.length > 0 && (
+                                    <div
+                                      className="absolute bottom-1 right-1 text-xs text-gray-400 cursor-pointer hover:text-gray-600"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFriendsPopup({ concertId: concert.id, bandName: concert.band_name });
+                                      }}
+                                    >
+                                      👥 {friendsDisplay.text}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             );
@@ -581,8 +630,16 @@ export function CalendarPage() {
                                             <div className="flex flex-col h-full">
                                               <div className="flex items-start justify-between gap-1 mb-1">
                                                 <div
-                                                  className="font-semibold text-sm text-white truncate flex-1"
-                                                  title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)} (${usersWhoFavorited.map(u => u.username).join(', ')})`}
+                                                  className="font-semibold text-sm text-white truncate flex-1 cursor-pointer hover:underline"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setConcertInfoPopup({
+                                                      bandName: concert.band_name,
+                                                      startTime: concert.start_time,
+                                                      endTime: concert.end_time,
+                                                      stage: concert.stage
+                                                    });
+                                                  }}
                                                 >
                                                   {concert.band_name}
                                                 </div>
@@ -634,6 +691,83 @@ export function CalendarPage() {
 
       {concerts.length === 0 && !loading && (
         <p className="mt-8 text-center text-gray-500">No concerts found</p>
+      )}
+
+      {/* Friends Popup Modal */}
+      {friendsPopup && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setFriendsPopup(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{friendsPopup.bandName}</h3>
+                <p className="text-sm text-gray-600 mt-1">Friends who favorited this concert:</p>
+              </div>
+              <button
+                onClick={() => setFriendsPopup(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-2">
+              {getFriendsWhoFavorited(friendsPopup.concertId).map((friend) => (
+                <div key={friend} className="flex items-center space-x-2 text-gray-700">
+                  <span className="text-lg">👤</span>
+                  <span>{friend}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Concert Info Popup Modal */}
+      {concertInfoPopup && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setConcertInfoPopup(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{concertInfoPopup.bandName}</h3>
+              </div>
+              <button
+                onClick={() => setConcertInfoPopup(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 text-gray-700">
+                <span className="text-lg">🕐</span>
+                <div>
+                  <p className="text-sm text-gray-500">Time</p>
+                  <p className="font-medium">
+                    {concertInfoPopup.startTime.slice(0, 5)} - {concertInfoPopup.endTime.slice(0, 5)}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 text-gray-700">
+                <span className="text-lg">🎪</span>
+                <div>
+                  <p className="text-sm text-gray-500">Stage</p>
+                  <p className="font-medium">{concertInfoPopup.stage}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
