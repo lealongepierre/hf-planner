@@ -403,7 +403,7 @@ export function CalendarPage() {
                     onChange={() => handleToggleFriendSelection(user.username)}
                     className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-gray-700">👤 {user.username}</span>
+                  <span className="text-sm text-gray-700">{user.username}</span>
                 </label>
               ))}
             </div>
@@ -630,8 +630,16 @@ export function CalendarPage() {
                                             <div className="flex flex-col h-full">
                                               <div className="flex items-start justify-between gap-1 mb-1">
                                                 <div
-                                                  className="font-semibold text-sm text-white truncate flex-1"
-                                                  title={`${concert.band_name} - ${concert.stage} - ${concert.start_time.slice(0, 5)}-${concert.end_time.slice(0, 5)} (${usersWhoFavorited.map(u => u.username).join(', ')})`}
+                                                  className="font-semibold text-sm text-white truncate flex-1 cursor-pointer hover:underline"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setConcertInfoPopup({
+                                                      bandName: concert.band_name,
+                                                      startTime: concert.start_time,
+                                                      endTime: concert.end_time,
+                                                      stage: concert.stage
+                                                    });
+                                                  }}
                                                 >
                                                   {concert.band_name}
                                                 </div>
@@ -702,7 +710,7 @@ export function CalendarPage() {
               </div>
               <button
                 onClick={() => setFriendsPopup(null)}
-                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer"
               >
                 ×
               </button>
@@ -735,7 +743,7 @@ export function CalendarPage() {
               </div>
               <button
                 onClick={() => setConcertInfoPopup(null)}
-                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer"
               >
                 ×
               </button>
