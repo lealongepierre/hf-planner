@@ -304,9 +304,9 @@ export function CalendarPage() {
       users.push({ username: currentUsername || 'You', isCurrentUser: true });
     }
 
-    // Add friends who favorited it
+    // Add friends who favorited it (only if they are selected in overlay)
     for (const [username, favIds] of friendsFavorites.entries()) {
-      if (favIds.has(concertId)) {
+      if (selectedFriendUsernames.has(username) && favIds.has(concertId)) {
         users.push({ username, isCurrentUser: false });
       }
     }
@@ -550,7 +550,7 @@ export function CalendarPage() {
 
                 <div className="flex-1 flex relative">
                   {days.map((day) => {
-                    // Collect ALL unique concerts that are favorited by user or any friend
+                    // Collect ALL unique concerts that are favorited by user or selected friends
                     const concertIdSet = new Set<number>();
 
                     // Add user's favorites
@@ -558,11 +558,13 @@ export function CalendarPage() {
                       .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id))
                       .forEach(c => concertIdSet.add(c.id));
 
-                    // Add friends' favorites
+                    // Add selected friends' favorites only
                     for (const [username, favIds] of friendsFavorites.entries()) {
-                      concerts
-                        .filter(c => (c.festival_day || c.day) === day && favIds.has(c.id))
-                        .forEach(c => concertIdSet.add(c.id));
+                      if (selectedFriendUsernames.has(username)) {
+                        concerts
+                          .filter(c => (c.festival_day || c.day) === day && favIds.has(c.id))
+                          .forEach(c => concertIdSet.add(c.id));
+                      }
                     }
 
                     // Get unique concert objects
