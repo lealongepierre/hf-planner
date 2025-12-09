@@ -319,6 +319,19 @@ export function CalendarPage() {
     return allUsers.filter(u => !u.isCurrentUser).map(u => u.username);
   };
 
+  const getAllFriendsWhoFavorited = (concertId: number): string[] => {
+    const friends: string[] = [];
+
+    // Get ALL friends who favorited it (regardless of selection)
+    for (const [username, favIds] of friendsFavorites.entries()) {
+      if (favIds.has(concertId)) {
+        friends.push(username);
+      }
+    }
+
+    return friends;
+  };
+
   const formatFriendsText = (friends: string[], maxLength: number = 25): { text: string, isTruncated: boolean } => {
     if (friends.length === 0) return { text: '', isTruncated: false };
 
@@ -780,6 +793,8 @@ export function CalendarPage() {
                               const widthPercent = overlap ? 100 / overlap.totalColumns : 100;
                               const leftPercent = overlap ? (overlap.column * widthPercent) : 0;
                               const isUserFavorite = favoriteConcertIds.has(concert.id);
+                              const friendsList = getAllFriendsWhoFavorited(concert.id);
+                              const friendsDisplay = formatFriendsText(friendsList);
 
                               return (
                                 <div
@@ -828,6 +843,19 @@ export function CalendarPage() {
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
                                     </div>
+
+                                    {/* Friend indicator */}
+                                    {friendsList.length > 0 && (
+                                      <div
+                                        className="absolute bottom-1 right-1 text-xs text-white px-1 cursor-pointer hover:underline"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setFriendsPopup({ concertId: concert.id, bandName: concert.band_name });
+                                        }}
+                                      >
+                                        👥 {friendsDisplay.text}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               );
@@ -871,7 +899,7 @@ export function CalendarPage() {
               </button>
             </div>
             <div className="space-y-2">
-              {getFriendsWhoFavorited(friendsPopup.concertId).map((friend) => (
+              {getAllFriendsWhoFavorited(friendsPopup.concertId).map((friend) => (
                 <div key={friend} className="flex items-center space-x-2 text-gray-700">
                   <span className="text-lg">👤</span>
                   <span>{friend}</span>
