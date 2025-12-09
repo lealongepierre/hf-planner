@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { concertsApi, favoritesApi, usersApi } from '../api';
 import type { Concert, UserListResponse } from '../types';
 
-type CalendarView = 'by-stage' | 'favorites';
+type CalendarView = 'by-stage' | 'favorites' | 'shared-favorites';
 
 export function CalendarPage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
@@ -330,6 +330,34 @@ export function CalendarPage() {
     return { text: fullText.slice(0, maxLength) + '...', isTruncated: true };
   };
 
+  const getSharedFavoriteConcerts = (day: string): Concert[] => {
+    if (selectedFriendUsernames.size === 0) {
+      // No friends selected - show only user's favorites
+      return concerts.filter(c =>
+        (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id)
+      );
+    }
+
+    // Start with user's favorites for this day
+    const sharedIds = new Set<number>();
+
+    concerts
+      .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id))
+      .forEach(concert => {
+        // Check if ALL selected friends also favorited this concert
+        const allFriendsHaveIt = Array.from(selectedFriendUsernames).every(username => {
+          const friendFavs = friendsFavorites.get(username);
+          return friendFavs && friendFavs.has(concert.id);
+        });
+
+        if (allFriendsHaveIt) {
+          sharedIds.add(concert.id);
+        }
+      });
+
+    return concerts.filter(c => sharedIds.has(c.id));
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -368,6 +396,7 @@ export function CalendarPage() {
           >
             <option value="by-stage">By Stage</option>
             <option value="favorites">My Favorites</option>
+            <option value="shared-favorites">Shared Favorites</option>
           </select>
         </div>
 
@@ -389,10 +418,10 @@ export function CalendarPage() {
           </div>
         )}
 
-        {view === 'favorites' && availableFriends.length > 0 && (
+        {(view === 'favorites' || view === 'shared-favorites') && availableFriends.length > 0 && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Overlay Friends' Calendars
+              {view === 'favorites' ? "Overlay Friends' Calendars" : "Select Friends to Find Shared Concerts"}
             </label>
             <div className="flex flex-wrap gap-4">
               {availableFriends.map(user => (
@@ -680,6 +709,130 @@ export function CalendarPage() {
                               </div>
                             );
                           })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {view === 'shared-favorites' && (
+        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
+          <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
+            <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
+              <div className="flex">
+                <div className="w-16 flex-shrink-0 sticky left-0 z-10 bg-white">
+                  <div className="sticky top-0 bg-white z-30 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm">
+                    Time
+                  </div>
+                  {timeSlots.map((time) => (
+                    <div
+                      key={time}
+                      className="h-20 border-b border-gray-200 flex items-start justify-end pr-2 text-xs text-gray-500 bg-white"
+                    >
+                      {time}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex-1 flex relative">
+                  {days.map((day) => {
+                    const sharedConcerts = getSharedFavoriteConcerts(day);
+                    const overlaps = calculateOverlaps(sharedConcerts);
+
+                    return (
+                      <div
+                        key={day}
+                        className="flex-1 border-l border-gray-300"
+                        style={{ position: 'relative', minWidth: '300px', maxWidth: '500px' }}
+                      >
+                        <div className="sticky top-0 bg-gray-50 z-20 h-12 border-b border-gray-300 flex items-center justify-center font-semibold text-sm px-2 shadow-sm">
+                          {day}
+                        </div>
+
+                        <div className="relative" style={{ height: `${timeSlots.length * 80}px` }}>
+                          {timeSlots.map((_, idx) => (
+                            <div
+                              key={idx}
+                              className="absolute w-full h-20 border-b border-gray-100"
+                              style={{ top: `${idx * 80}px` }}
+                            />
+                          ))}
+
+                          {sharedConcerts.length === 0 ? (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="text-center text-gray-400 px-4">
+                                <p className="text-sm">
+                                  {selectedFriendUsernames.size === 0
+                                    ? 'No favorites yet'
+                                    : 'No shared concerts'}
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            sharedConcerts.map((concert) => {
+                              const position = getConcertPosition(concert);
+                              const overlap = overlaps.get(concert.id);
+                              const widthPercent = overlap ? 100 / overlap.totalColumns : 100;
+                              const leftPercent = overlap ? (overlap.column * widthPercent) : 0;
+                              const isUserFavorite = favoriteConcertIds.has(concert.id);
+
+                              return (
+                                <div
+                                  key={concert.id}
+                                  className="absolute px-1"
+                                  style={{
+                                    top: position.top,
+                                    left: `${leftPercent}%`,
+                                    width: `${widthPercent}%`,
+                                  }}
+                                >
+                                  <div
+                                    className={`${userColor.bg} ${userColor.border} p-2 rounded shadow-sm hover:opacity-90 transition-all overflow-hidden`}
+                                    style={{ height: position.height, minHeight: '60px' }}
+                                  >
+                                    <div className="flex flex-col h-full">
+                                      <div className="flex items-start justify-between gap-1 mb-1">
+                                        <div
+                                          className="font-semibold text-sm text-white truncate flex-1 cursor-pointer hover:underline"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setConcertInfoPopup({
+                                              bandName: concert.band_name,
+                                              startTime: concert.start_time,
+                                              endTime: concert.end_time,
+                                              stage: concert.stage
+                                            });
+                                          }}
+                                        >
+                                          {concert.band_name}
+                                        </div>
+                                        {isUserFavorite && (
+                                          <button
+                                            onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                            className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
+                                            title="Remove from favorites"
+                                          >
+                                            ⭐
+                                          </button>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-white truncate" title={concert.stage}>
+                                        {concert.stage}
+                                      </div>
+                                      <div className="text-xs text-white">
+                                        {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
                         </div>
                       </div>
                     );
