@@ -165,15 +165,15 @@ export function CalendarPage() {
 
   const timeSlots = getTimeSlots();
 
+  // Helper to convert time string to minutes since 12:00
+  const getMinutes = (time: string) => {
+    const [hour, min] = time.split(':').map(Number);
+    return (hour < 12 ? hour + 24 : hour) * 60 + min;
+  };
+
   const getConcertPosition = (concert: Concert) => {
-    const [startHour, startMin] = concert.start_time.split(':').map(Number);
-    const [endHour, endMin] = concert.end_time.split(':').map(Number);
-
-    const adjustedStartHour = startHour < 12 ? startHour + 24 : startHour;
-    const adjustedEndHour = endHour < 12 ? endHour + 24 : endHour;
-
-    const startMinutes = (adjustedStartHour - 12) * 60 + startMin;
-    const endMinutes = (adjustedEndHour - 12) * 60 + endMin;
+    const startMinutes = getMinutes(concert.start_time) - (12 * 60);
+    const endMinutes = getMinutes(concert.end_time) - (12 * 60);
     const duration = endMinutes - startMinutes;
 
     return {
@@ -187,18 +187,10 @@ export function CalendarPage() {
     if (concerts.length === 0) return new Map();
 
     const sorted = [...concerts].sort((a, b) => {
-      const [aHour, aMin] = a.start_time.split(':').map(Number);
-      const [bHour, bMin] = b.start_time.split(':').map(Number);
-      const aAdjusted = (aHour < 12 ? aHour + 24 : aHour) * 60 + aMin;
-      const bAdjusted = (bHour < 12 ? bHour + 24 : bHour) * 60 + bMin;
-      return aAdjusted - bAdjusted;
+      const aMinutes = getMinutes(a.start_time);
+      const bMinutes = getMinutes(b.start_time);
+      return aMinutes - bMinutes;
     });
-
-    // Helper to get time in minutes
-    const getMinutes = (time: string) => {
-      const [hour, min] = time.split(':').map(Number);
-      return (hour < 12 ? hour + 24 : hour) * 60 + min;
-    };
 
     // Group concerts into overlap groups (concerts that share any time overlap)
     const overlapGroups: Concert[][] = [];
@@ -314,11 +306,6 @@ export function CalendarPage() {
     return users;
   };
 
-  const getFriendsWhoFavorited = (concertId: number): string[] => {
-    const allUsers = getUsersWhoFavorited(concertId);
-    return allUsers.filter(u => !u.isCurrentUser).map(u => u.username);
-  };
-
   const getAllFriendsWhoFavorited = (concertId: number): string[] => {
     const friends: string[] = [];
 
@@ -369,6 +356,22 @@ export function CalendarPage() {
       });
 
     return concerts.filter(c => sharedIds.has(c.id));
+  };
+
+  // Helper functions for event handlers
+  const handleShowConcertInfo = (e: React.MouseEvent, concert: Concert) => {
+    e.stopPropagation();
+    setConcertInfoPopup({
+      bandName: concert.band_name,
+      startTime: concert.start_time,
+      endTime: concert.end_time,
+      stage: concert.stage
+    });
+  };
+
+  const handleShowFriendsPopup = (e: React.MouseEvent, concertId: number, bandName: string) => {
+    e.stopPropagation();
+    setFriendsPopup({ concertId, bandName });
   };
 
   if (loading) {
@@ -497,7 +500,7 @@ export function CalendarPage() {
                           .map((concert) => {
                             const position = getConcertPosition(concert);
                             const isFavorite = favoriteConcertIds.has(concert.id);
-                            const friendsList = getFriendsWhoFavorited(concert.id);
+                            const friendsList = getAllFriendsWhoFavorited(concert.id);
                             const friendsDisplay = formatFriendsText(friendsList);
 
                             return (
@@ -517,15 +520,7 @@ export function CalendarPage() {
                                   <div className="flex items-start justify-between gap-1">
                                     <div
                                       className="flex-1 min-w-0 cursor-pointer"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setConcertInfoPopup({
-                                          bandName: concert.band_name,
-                                          startTime: concert.start_time,
-                                          endTime: concert.end_time,
-                                          stage: concert.stage
-                                        });
-                                      }}
+                                      onClick={(e) => handleShowConcertInfo(e, concert)}
                                     >
                                       <div
                                         className={`font-semibold text-sm ${isFavorite ? 'text-white' : 'text-gray-900'} truncate hover:underline`}
@@ -549,10 +544,7 @@ export function CalendarPage() {
                                   {friendsList.length > 0 && (
                                     <div
                                       className="absolute bottom-1 right-1 text-xs text-gray-400 cursor-pointer hover:text-gray-600"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setFriendsPopup({ concertId: concert.id, bandName: concert.band_name });
-                                      }}
+                                      onClick={(e) => handleShowFriendsPopup(e, concert.id, concert.band_name)}
                                     >
                                       👥 {friendsDisplay.text}
                                     </div>
@@ -675,15 +667,7 @@ export function CalendarPage() {
                                               <div className="flex items-start justify-between gap-1 mb-1">
                                                 <div
                                                   className="font-semibold text-sm text-white truncate flex-1 cursor-pointer hover:underline"
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setConcertInfoPopup({
-                                                      bandName: concert.band_name,
-                                                      startTime: concert.start_time,
-                                                      endTime: concert.end_time,
-                                                      stage: concert.stage
-                                                    });
-                                                  }}
+                                                  onClick={(e) => handleShowConcertInfo(e, concert)}
                                                 >
                                                   {concert.band_name}
                                                 </div>
@@ -814,15 +798,7 @@ export function CalendarPage() {
                                       <div className="flex items-start justify-between gap-1 mb-1">
                                         <div
                                           className="font-semibold text-sm text-white truncate flex-1 cursor-pointer hover:underline"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setConcertInfoPopup({
-                                              bandName: concert.band_name,
-                                              startTime: concert.start_time,
-                                              endTime: concert.end_time,
-                                              stage: concert.stage
-                                            });
-                                          }}
+                                          onClick={(e) => handleShowConcertInfo(e, concert)}
                                         >
                                           {concert.band_name}
                                         </div>
@@ -848,10 +824,7 @@ export function CalendarPage() {
                                     {friendsList.length > 0 && (
                                       <div
                                         className="absolute bottom-1 right-1 text-xs text-white px-1 cursor-pointer hover:underline"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setFriendsPopup({ concertId: concert.id, bandName: concert.band_name });
-                                        }}
+                                        onClick={(e) => handleShowFriendsPopup(e, concert.id, concert.band_name)}
                                       >
                                         👥 {friendsDisplay.text}
                                       </div>
