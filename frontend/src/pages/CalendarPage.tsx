@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { concertsApi, favoritesApi, usersApi } from '../api';
 import type { Concert, UserListResponse } from '../types';
 
@@ -330,19 +330,23 @@ export function CalendarPage() {
     return { text: fullText.slice(0, maxLength) + '...', isTruncated: true };
   };
 
-  const getSharedFavoriteConcerts = (day: string): Concert[] => {
+  // Pre-compute shared concert IDs once for all days (performance optimization)
+  // This avoids recalculating the intersection for each day separately
+  const sharedConcertIds = useMemo(() => {
+    const shared = new Set<number>();
+
     if (selectedFriendUsernames.size === 0) {
-      // No friends selected - show only user's favorites
-      return concerts.filter(c =>
-        (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id)
-      );
+      // No friends selected - all user's favorites are "shared"
+      return favoriteConcertIds;
     }
 
-    // Start with user's favorites for this day
-    const sharedIds = new Set<number>();
+    // Edge case: If a selected friend's favorites_public becomes false after being selected,
+    // their favorites data may be stale. Currently we don't handle this dynamically - the user
+    // would need to deselect and reselect the friend to refresh their data.
 
+    // Start with user's favorites across all days
     concerts
-      .filter(c => (c.festival_day || c.day) === day && favoriteConcertIds.has(c.id))
+      .filter(c => favoriteConcertIds.has(c.id))
       .forEach(concert => {
         // Check if ALL selected friends also favorited this concert
         const allFriendsHaveIt = Array.from(selectedFriendUsernames).every(username => {
@@ -351,11 +355,17 @@ export function CalendarPage() {
         });
 
         if (allFriendsHaveIt) {
-          sharedIds.add(concert.id);
+          shared.add(concert.id);
         }
       });
 
-    return concerts.filter(c => sharedIds.has(c.id));
+    return shared;
+  }, [selectedFriendUsernames, favoriteConcertIds, friendsFavorites, concerts]);
+
+  const getSharedFavoriteConcerts = (day: string): Concert[] => {
+    return concerts.filter(c =>
+      (c.festival_day || c.day) === day && sharedConcertIds.has(c.id)
+    );
   };
 
   // Helper functions for event handlers
@@ -776,6 +786,8 @@ export function CalendarPage() {
                               const overlap = overlaps.get(concert.id);
                               const widthPercent = overlap ? 100 / overlap.totalColumns : 100;
                               const leftPercent = overlap ? (overlap.column * widthPercent) : 0;
+                              // Note: This check is redundant (always true) in shared-favorites view since
+                              // sharedConcerts only contains concerts the user has favorited. Kept for consistency.
                               const isUserFavorite = favoriteConcertIds.has(concert.id);
                               const friendsList = getAllFriendsWhoFavorited(concert.id);
                               const friendsDisplay = formatFriendsText(friendsList);
