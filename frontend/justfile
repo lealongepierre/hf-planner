@@ -1,0 +1,33 @@
+# Frontend testing commands
+
+# Run all tests
+test:
+    npm run test
+
+# Run tests in UI mode
+test-ui:
+    npm run test:ui
+
+# Run tests with coverage report
+test-coverage:
+    npm run test:coverage
+
+# Run tests in watch mode
+test-watch:
+    npm run test -- --watch
+
+# Run a specific test file
+test-file FILE:
+    npm run test -- {{FILE}}
+
+# Run development server
+dev:
+    npm run dev
+
+# Build for production
+build:
+    npm run build
+
+# Lint code
+lint:
+    npm run lint
