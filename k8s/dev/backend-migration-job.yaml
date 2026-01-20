@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-migration
+  namespace: hf-planner-dev
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: backend-migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migration
+        image: longepierre/hf-planner-backend:latest
+        command: ["poetry", "run", "alembic", "upgrade", "head"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: DATABASE_URL
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: JWT_SECRET_KEY
+        - name: JWT_ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: JWT_ALGORITHM
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"

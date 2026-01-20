@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: hf-planner-dev
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # For local development with minikube, use standard storage class
+  # For cloud providers, specify appropriate storage class (e.g., gp2, pd-standard)
+  storageClassName: standard

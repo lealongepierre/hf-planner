@@ -131,23 +131,6 @@ export function CalendarPage() {
   });
   const filteredConcerts = concerts.filter(c => (c.festival_day || c.day) === selectedDay);
 
-  // Color mapping for each day
-  const dayColors = [
-    { bg: 'bg-indigo-500', border: 'border-l-4 border-l-indigo-700', text: 'text-indigo-100' },
-    { bg: 'bg-emerald-500', border: 'border-l-4 border-l-emerald-700', text: 'text-emerald-100' },
-    { bg: 'bg-purple-500', border: 'border-l-4 border-l-purple-700', text: 'text-purple-100' },
-    { bg: 'bg-blue-500', border: 'border-l-4 border-l-blue-700', text: 'text-blue-100' },
-    { bg: 'bg-red-500', border: 'border-l-4 border-l-red-700', text: 'text-red-100' },
-    { bg: 'bg-orange-500', border: 'border-l-4 border-l-orange-700', text: 'text-orange-100' },
-    { bg: 'bg-amber-500', border: 'border-l-4 border-l-amber-700', text: 'text-amber-100' },
-    { bg: 'bg-pink-500', border: 'border-l-4 border-l-pink-700', text: 'text-pink-100' },
-  ];
-
-  const getDayColor = (day: string) => {
-    const dayIndex = days.indexOf(day);
-    return dayColors[dayIndex % dayColors.length];
-  };
-
   const stageOrder = ['Mainstage 1', 'Mainstage 2', 'Warzone', 'Valley', 'Altar', 'Temple'];
   const allStages = [...new Set(filteredConcerts.map(c => c.stage))];
   const stages = stageOrder.filter(stage => allStages.includes(stage)).concat(
@@ -614,7 +597,6 @@ export function CalendarPage() {
                     // Get unique concert objects
                     const allDayConcerts = concerts.filter(c => concertIdSet.has(c.id));
                     const overlaps = calculateOverlaps(allDayConcerts);
-                    const dayColor = getDayColor(day);
 
                     return (
                       <div

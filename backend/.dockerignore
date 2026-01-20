@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+ENV/
+.venv
+
+# Poetry
+poetry.lock
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+*.env
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# Alembic (migrations will be in image, but don't need backup files)
+alembic/versions/*.pyc
+
+# Misc
+.DS_Store
+*.log
