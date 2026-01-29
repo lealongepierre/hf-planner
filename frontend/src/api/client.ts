@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { authUtils } from '../utils/auth';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// In production/K8s, use relative URL (nginx proxies /api to backend)
+// In development, use localhost:8000
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const apiClient = axios.create({
   baseURL: `${API_URL}/api/v1`,

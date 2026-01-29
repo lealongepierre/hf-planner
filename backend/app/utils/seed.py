@@ -1,6 +1,7 @@
 from datetime import time
 
-from sqlmodel import Session, create_engine
+from sqlalchemy import func
+from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
 from app.models import Concert
@@ -38,7 +39,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
     {
         "band_name": "Anthrax",
@@ -46,7 +47,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
-        "stage": "The Warzone",
+        "stage": "Warzone",
     },
     {
         "band_name": "Testament",
@@ -54,7 +55,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Exodus",
@@ -62,7 +63,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
-        "stage": "The Valley",
+        "stage": "Valley",
     },
     {
         "band_name": "Electric Wizard",
@@ -70,7 +71,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(1, 0),
         "end_time": time(2, 30),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Sleep",
@@ -78,7 +79,7 @@ concerts_data = [
         "festival_day": "Friday",
         "start_time": time(2, 45),
         "end_time": time(4, 0),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
     {
         "band_name": "Judas Priest",
@@ -110,7 +111,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
     {
         "band_name": "Machine Head",
@@ -118,7 +119,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
-        "stage": "The Warzone",
+        "stage": "Warzone",
     },
     {
         "band_name": "Lamb of God",
@@ -126,7 +127,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Opeth",
@@ -134,7 +135,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
-        "stage": "The Valley",
+        "stage": "Valley",
     },
     {
         "band_name": "Sunn O)))",
@@ -142,7 +143,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(1, 30),
         "end_time": time(3, 0),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Boris",
@@ -150,7 +151,7 @@ concerts_data = [
         "festival_day": "Saturday",
         "start_time": time(3, 15),
         "end_time": time(4, 30),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
     {
         "band_name": "Slipknot",
@@ -182,7 +183,7 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(19, 30),
         "end_time": time(21, 0),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
     {
         "band_name": "Deftones",
@@ -190,7 +191,7 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(17, 30),
         "end_time": time(18, 45),
-        "stage": "The Warzone",
+        "stage": "Warzone",
     },
     {
         "band_name": "Mastodon",
@@ -198,7 +199,7 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(16, 0),
         "end_time": time(17, 15),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Sepultura",
@@ -206,7 +207,7 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(15, 0),
         "end_time": time(16, 0),
-        "stage": "The Valley",
+        "stage": "Valley",
     },
     {
         "band_name": "Melvins",
@@ -214,7 +215,7 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(0, 30),
         "end_time": time(2, 0),
-        "stage": "The Temple",
+        "stage": "Temple",
     },
     {
         "band_name": "Neurosis",
@@ -222,14 +223,17 @@ concerts_data = [
         "festival_day": "Sunday",
         "start_time": time(2, 15),
         "end_time": time(3, 30),
-        "stage": "The Altar",
+        "stage": "Altar",
     },
 ]
 
 
 def seed_concerts():
     with Session(engine) as session:
-        existing_concerts = session.query(Concert).count()
+        # Count existing concerts efficiently using database-level count
+        statement = select(func.count()).select_from(Concert)
+        existing_concerts = session.exec(statement).one()
+
         if existing_concerts > 0:
             print(f"Database already contains {existing_concerts} concerts. Skipping seed.")
             return

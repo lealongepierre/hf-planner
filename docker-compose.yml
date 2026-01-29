@@ -1,4 +1,5 @@
 services:
+  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: hf-planner-db
@@ -15,6 +16,61 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - hf-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hf-planner-backend
+    environment:
+      DATABASE_URL: postgresql://hfplanner:hfplanner@postgres:5432/hfplanner
+      JWT_SECRET_KEY: your-secret-key-change-in-production
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hf-network
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    # For development: mount source code
+    # volumes:
+    #   - ./backend:/app
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+    container_name: hf-planner-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hf-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+networks:
+  hf-network:
+    driver: bridge
 
 volumes:
   postgres_data:
