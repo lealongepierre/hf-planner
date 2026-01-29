@@ -28,8 +28,8 @@ spec:
               key: JWT_SECRET_KEY
         - name: JWT_ALGORITHM
           valueFrom:
-            secretKeyRef:
-              name: backend-secret
+            configMapKeyRef:
+              name: backend-config
               key: JWT_ALGORITHM
         resources:
           requests:

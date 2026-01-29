@@ -14,7 +14,7 @@ ENV/
 .venv
 
 # Poetry
-poetry.lock
+# Note: poetry.lock is NOT ignored - we want it for reproducible builds
 
 # Testing
 .pytest_cache/

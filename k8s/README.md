@@ -17,7 +17,6 @@ k8s/
 │   ├── backend-deployment.yaml
 │   ├── backend-service.yaml
 │   ├── backend-migration-job.yaml
-│   ├── frontend-configmap.yaml
 │   ├── frontend-deployment.yaml
 │   └── frontend-service.yaml
 └── README.md
@@ -113,7 +112,7 @@ Creates isolated environment for the application.
 ### Frontend
 - **Deployment**: 2 replicas for high availability
 - **Service**: LoadBalancer for external access
-- **ConfigMap**: API URL configuration
+- Uses nginx proxy to route `/api` requests to backend (no ConfigMap needed)
 
 ## Adding New Environments
 
