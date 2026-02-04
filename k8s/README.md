@@ -19,6 +19,15 @@ k8s/
 │   ├── backend-migration-job.yaml
 │   ├── frontend-deployment.yaml
 │   └── frontend-service.yaml
+├── prod/          # Production environment manifests (GKE + Cloud SQL)
+│   ├── namespace.yaml
+│   ├── backend-secret.yaml
+│   ├── backend-configmap.yaml
+│   ├── backend-deployment.yaml
+│   ├── backend-service.yaml
+│   ├── backend-migration-job.yaml
+│   ├── frontend-deployment.yaml
+│   └── frontend-service.yaml
 └── README.md
 ```
 
@@ -34,6 +43,19 @@ Local development and testing environment using minikube.
 - Backend: 2 replicas
 - Frontend: 2 replicas
 - Services: ClusterIP for internal, LoadBalancer for frontend
+
+### Prod Environment (`prod/`)
+
+Production environment for GKE with Cloud SQL managed PostgreSQL.
+
+**Configuration:**
+- Namespace: `hf-planner-prod`
+- PostgreSQL: Cloud SQL (external managed database)
+- Backend: 3 replicas with higher resource limits
+- Frontend: 3 replicas with higher resource limits
+- Services: ClusterIP for backend, LoadBalancer for frontend
+
+**Important:** No postgres-*.yaml files in prod - uses Cloud SQL instead.
 
 ## Quick Start
 
@@ -114,16 +136,62 @@ Creates isolated environment for the application.
 - **Service**: LoadBalancer for external access
 - Uses nginx proxy to route `/api` requests to backend (no ConfigMap needed)
 
+## Production Deployment (GKE + Cloud SQL)
+
+### Prerequisites
+
+1. **GKE Cluster**: Create a GKE cluster in your GCP project
+2. **Cloud SQL Instance**: Set up a Cloud SQL PostgreSQL instance
+
+### Cloud SQL Setup
+
+1. Create a Cloud SQL PostgreSQL instance in GCP Console
+2. Create a database named `hfplanner`
+3. Create a user with appropriate permissions
+4. Note the instance connection IP or configure Cloud SQL Proxy
+
+### Update Secrets
+
+Before deploying, update `k8s/prod/backend-secret.yaml` with real values:
+
+```yaml
+stringData:
+  JWT_SECRET_KEY: "your-secure-random-secret-key"
+  DATABASE_URL: "postgresql://USER:PASSWORD@CLOUD_SQL_IP:5432/hfplanner"
+```
+
+### Deploy to Production
+
+```bash
+# Connect to your GKE cluster
+gcloud container clusters get-credentials YOUR_CLUSTER --zone YOUR_ZONE --project YOUR_PROJECT
+
+# Deploy all resources
+kubectl apply -f k8s/prod/
+
+# Run database migrations
+kubectl apply -f k8s/prod/backend-migration-job.yaml
+
+# Check deployment status
+kubectl get all -n hf-planner-prod
+```
+
+### Get External IP
+
+```bash
+# Get the LoadBalancer external IP
+kubectl get svc frontend-service -n hf-planner-prod
+```
+
 ## Adding New Environments
 
-To create staging or production environments:
+To create staging environments:
 
-1. Copy `dev/` directory to `staging/` or `prod/`
-2. Update namespace in all files
-3. Adjust replica counts and resource limits
-4. Update secrets with production credentials
-5. Configure Ingress instead of LoadBalancer
-6. Add monitoring and logging configurations
+1. Copy `prod/` directory to `staging/`
+2. Update namespace in all files to `hf-planner-staging`
+3. Adjust replica counts and resource limits as needed
+4. Update secrets with staging credentials
+5. Add monitoring and logging configurations
 
 ## Security Notes
 

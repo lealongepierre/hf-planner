@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: hf-planner-dev
+  namespace: hf-planner-prod
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: frontend
@@ -21,11 +21,11 @@ spec:
           name: http
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
             memory: "128Mi"
             cpu: "200m"
+          limits:
+            memory: "256Mi"
+            cpu: "400m"
         livenessProbe:
           httpGet:
             path: /health
