@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { concertsApi, favoritesApi } from '../api';
 import type { Concert } from '../types';
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  detail?: string;
+}
 
 export function ConcertsPage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
@@ -14,13 +19,14 @@ export function ConcertsPage() {
     setLoading(true);
     setError('');
     try {
-      const params: any = {};
+      const params: { day?: string; stage?: string } = {};
       if (dayFilter) params.day = dayFilter;
       if (stageFilter) params.stage = stageFilter;
       const data = await concertsApi.getConcerts(params);
       setConcerts(data);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load concerts');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      setError(axiosError.response?.data?.detail || 'Failed to load concerts');
     } finally {
       setLoading(false);
     }
@@ -30,7 +36,7 @@ export function ConcertsPage() {
     try {
       const favorites = await favoritesApi.getFavorites();
       setFavoriteConcertIds(new Set(favorites.map(concert => concert.id)));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load favorites:', err);
     }
   };
@@ -38,14 +44,16 @@ export function ConcertsPage() {
   useEffect(() => {
     loadConcerts();
     loadFavorites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayFilter, stageFilter]);
 
   const handleAddFavorite = async (concertId: number) => {
     try {
       await favoritesApi.addFavorite({ concert_id: concertId });
       setFavoriteConcertIds(prev => new Set([...prev, concertId]));
-    } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to add favorite');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError.response?.data?.detail || 'Failed to add favorite');
     }
   };
 
@@ -57,8 +65,9 @@ export function ConcertsPage() {
         newSet.delete(concertId);
         return newSet;
       });
-    } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to remove favorite');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError.response?.data?.detail || 'Failed to remove favorite');
     }
   };
 

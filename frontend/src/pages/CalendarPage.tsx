@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { concertsApi, favoritesApi, usersApi } from '../api';
 import type { Concert, UserListResponse } from '../types';
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  detail?: string;
+}
 
 type CalendarView = 'by-stage' | 'favorites' | 'shared-favorites';
 
@@ -23,17 +28,19 @@ export function CalendarPage() {
     loadFavorites();
     loadUsers();
     loadCurrentUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     loadAllFriendsFavorites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, currentUsername]);
 
   const loadCurrentUser = async () => {
     try {
       const user = await usersApi.getCurrentUser();
       setCurrentUsername(user.username);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load current user:', err);
     }
   };
@@ -42,7 +49,7 @@ export function CalendarPage() {
     try {
       const data = await usersApi.getUsers();
       setUsers(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load users:', err);
     }
   };
@@ -59,7 +66,7 @@ export function CalendarPage() {
       try {
         const favorites = await usersApi.getUserFavorites(user.username);
         newFriendsFavorites.set(user.username, new Set(favorites.map(concert => concert.id)));
-      } catch (err: any) {
+      } catch (err) {
         console.error(`Failed to load favorites for ${user.username}:`, err);
       }
     }
@@ -89,8 +96,9 @@ export function CalendarPage() {
         const firstDay = data[0].festival_day || data[0].day;
         setSelectedDay(firstDay);
       }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load concerts');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      setError(axiosError.response?.data?.detail || 'Failed to load concerts');
     } finally {
       setLoading(false);
     }
@@ -100,7 +108,7 @@ export function CalendarPage() {
     try {
       const favorites = await favoritesApi.getFavorites();
       setFavoriteConcertIds(new Set(favorites.map(concert => concert.id)));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load favorites:', err);
     }
   };
@@ -119,8 +127,9 @@ export function CalendarPage() {
         await favoritesApi.addFavorite({ concert_id: concertId });
         setFavoriteConcertIds(prev => new Set([...prev, concertId]));
       }
-    } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update favorite');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError.response?.data?.detail || 'Failed to update favorite');
     }
   };
 

@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usersApi } from '../api';
 import type { UserListResponse } from '../types';
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  detail?: string;
+}
 
 export function UsersPage() {
   const [users, setUsers] = useState<UserListResponse[]>([]);
@@ -21,8 +26,9 @@ export function UsersPage() {
         // Filter out the current user from the list
         const otherUsers = allUsers.filter(user => user.id !== currentUser.id);
         setUsers(otherUsers);
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Failed to load users');
+      } catch (err) {
+        const axiosError = err as AxiosError<ApiErrorResponse>;
+        setError(axiosError.response?.data?.detail || 'Failed to load users');
       } finally {
         setLoading(false);
       }

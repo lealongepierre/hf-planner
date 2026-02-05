@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { favoritesApi } from '../api';
 import type { Concert } from '../types';
 import { useUser } from '../contexts/UserContext';
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  detail?: string;
+}
 
 export function FavoritesPage() {
   const [favorites, setFavorites] = useState<Concert[]>([]);
@@ -15,8 +20,9 @@ export function FavoritesPage() {
     try {
       const data = await favoritesApi.getFavorites();
       setFavorites(data);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load favorites');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      setError(axiosError.response?.data?.detail || 'Failed to load favorites');
     } finally {
       setLoading(false);
     }
@@ -30,8 +36,9 @@ export function FavoritesPage() {
     try {
       await favoritesApi.removeFavorite(concertId);
       setFavorites(favorites.filter(f => f.id !== concertId));
-    } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to remove favorite');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError.response?.data?.detail || 'Failed to remove favorite');
     }
   };
 
