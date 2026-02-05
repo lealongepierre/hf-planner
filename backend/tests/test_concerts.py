@@ -1,5 +1,6 @@
-from app.models import Concert
 from fastapi.testclient import TestClient
+
+from app.models import Concert
 
 
 def test_get_all_concerts(client: TestClient, test_concerts: list[Concert]):

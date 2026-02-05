@@ -1,7 +1,8 @@
 import os
 
-from app.models import Concert
 from sqlmodel import Session, create_engine
+
+from app.models import Concert
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql://hfplanner:hfplanner@localhost:5432/hfplanner"

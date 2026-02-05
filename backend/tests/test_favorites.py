@@ -1,6 +1,7 @@
-from app.models import Concert, User
 from fastapi.testclient import TestClient
 from sqlmodel import Session
+
+from app.models import Concert, User
 
 
 def test_add_favorite_success(

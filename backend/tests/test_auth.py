@@ -1,7 +1,8 @@
 import pytest
+from fastapi.testclient import TestClient
+
 from app.models import User
 from app.schemas.auth import SignInRequest, SignUpRequest, TokenResponse
-from fastapi.testclient import TestClient
 
 
 @pytest.mark.parametrize(
