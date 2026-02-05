@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
+// Use the same URL as .env.local for development/testing
 const API_URL = 'http://localhost:8000/api/v1';
 
 export const handlers = [
