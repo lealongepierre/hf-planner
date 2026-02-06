@@ -9,19 +9,22 @@ from app.schemas.auth import SignInRequest, SignUpRequest, TokenResponse
     "test_id,expected_status,request_data",
     [
         pytest.param(
-            test_id="valid_new_user",
-            expected_status=201,
-            request_data=SignUpRequest(username="newuser", password="password123"),
+            "valid_new_user",
+            201,
+            SignUpRequest(username="newuser", password="password123"),
+            id="valid_new_user",
         ),
         pytest.param(
-            test_id="short_username",
-            expected_status=422,
-            request_data=SignUpRequest.model_construct(username="ab", password="password123"),
+            "short_username",
+            422,
+            SignUpRequest.model_construct(username="ab", password="password123"),
+            id="short_username",
         ),
         pytest.param(
-            test_id="short_password",
-            expected_status=422,
-            request_data=SignUpRequest.model_construct(username="newuser", password="12345"),
+            "short_password",
+            422,
+            SignUpRequest.model_construct(username="newuser", password="12345"),
+            id="short_password",
         ),
     ],
 )
@@ -69,14 +72,16 @@ def test_signup_with_existing_user(client: TestClient, test_user: User):
     "test_id,expected_status,request_data",
     [
         pytest.param(
-            test_id="valid_existing_user",
-            expected_status=200,
-            request_data=SignInRequest(username="testuser", password="testpassword123"),
+            "valid_existing_user",
+            200,
+            SignInRequest(username="testuser", password="testpassword123"),
+            id="valid_existing_user",
         ),
         pytest.param(
-            test_id="wrong_password",
-            expected_status=401,
-            request_data=SignInRequest(username="testuser", password="wrongpassword"),
+            "wrong_password",
+            401,
+            SignInRequest(username="testuser", password="wrongpassword"),
+            id="wrong_password",
         ),
     ],
 )
