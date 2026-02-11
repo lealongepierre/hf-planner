@@ -1,8 +1,8 @@
 name: Deploy to GKE
 
 on:
-  push:
-    branches: [main]
+  #push:
+  #  branches: [main] # for now, manual trigger only
   workflow_dispatch:  # Allow manual trigger
 
 env:
@@ -33,7 +33,7 @@ jobs:
         id: meta
         run: echo "tags=${{ github.sha }}" >> $GITHUB_OUTPUT
 
-      - name: Build and push backend
+      - name:
         uses: docker/build-push-action@v5
         with:
           context: ./backend
