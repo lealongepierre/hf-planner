@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { usersApi } from '../api';
 import { authUtils } from '../utils/auth';
+import type { AxiosError } from 'axios';
 
 interface UserContextType {
   username: string;
@@ -11,6 +12,10 @@ interface UserContextType {
   toggleVisibility: () => Promise<void>;
 }
 
+interface ApiErrorResponse {
+  detail?: string;
+}
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -18,7 +23,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [isPublic, setIsPublic] = useState(false);
   const isAuthenticated = authUtils.isAuthenticated();
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     if (isAuthenticated) {
       try {
         const user = await usersApi.getCurrentUser();
@@ -28,20 +33,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
         console.error('Failed to fetch current user:', err);
       }
     }
-  };
+  }, [isAuthenticated]);
 
   const toggleVisibility = async () => {
     try {
       await usersApi.updateFavoritesVisibility({ public: !isPublic });
       setIsPublic(!isPublic);
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || 'Failed to update visibility');
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError?.response?.data?.detail || 'Failed to update visibility');
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshUser();
-  }, [isAuthenticated]);
+  }, [refreshUser]);
 
   return (
     <UserContext.Provider value={{ username, isPublic, setIsPublic, refreshUser, toggleVisibility }}>
@@ -50,6 +57,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useUser() {
   const context = useContext(UserContext);
   if (context === undefined) {

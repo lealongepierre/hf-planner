@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usersApi } from '../api';
 import type { Concert } from '../types';
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  detail?: string;
+}
 
 export function UserFavoritesPage() {
   const { username } = useParams<{ username: string }>();
@@ -19,8 +24,9 @@ export function UserFavoritesPage() {
       try {
         const data = await usersApi.getUserFavorites(username);
         setConcerts(data);
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Failed to load favorites');
+      } catch (err) {
+        const axiosError = err as AxiosError<ApiErrorResponse>;
+        setError(axiosError.response?.data?.detail || 'Failed to load favorites');
       } finally {
         setLoading(false);
       }

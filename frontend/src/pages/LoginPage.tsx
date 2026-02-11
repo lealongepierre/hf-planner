@@ -2,6 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api';
 import { authUtils } from '../utils/auth';
+import type { AxiosError } from 'axios';
+
+interface ValidationError {
+  loc?: (string | number)[];
+  msg?: string;
+}
+
+interface ApiErrorResponse {
+  detail?: string | ValidationError[];
+}
 
 export function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
@@ -28,32 +38,33 @@ export function LoginPage() {
         authUtils.setToken(tokenResponse.access_token);
         navigate('/concerts');
       }
-    } catch (err: any) {
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
       console.error('Login error:', err);
-      console.error('Error response:', err.response);
+      console.error('Error response:', axiosError.response);
 
       // Handle different error formats
       let errorMessage = 'Authentication failed';
 
-      if (err.response?.data?.detail) {
-        const detail = err.response.data.detail;
+      if (axiosError.response?.data?.detail) {
+        const detail = axiosError.response.data.detail;
 
         // Check if detail is an array (validation errors)
         if (Array.isArray(detail)) {
           // Extract validation error messages with field names
-          errorMessage = detail.map((e: any) => {
-            const field = e.loc?.[e.loc.length - 1] || 'field';
-            const msg = e.msg || 'Invalid value';
+          errorMessage = detail.map((validationErr: ValidationError) => {
+            const field = validationErr.loc?.[validationErr.loc.length - 1] || 'field';
+            const msg = validationErr.msg || 'Invalid value';
             // Capitalize field name and replace "String" with field name in message
-            const capitalizedField = field.charAt(0).toUpperCase() + field.slice(1);
+            const capitalizedField = String(field).charAt(0).toUpperCase() + String(field).slice(1);
             return msg.replace(/String/g, capitalizedField);
           }).join(', ');
         } else if (typeof detail === 'string') {
           // String error from custom exceptions
           errorMessage = detail;
         }
-      } else if (err.message) {
-        errorMessage = err.message;
+      } else if (axiosError.message) {
+        errorMessage = axiosError.message;
       }
 
       setError(errorMessage);

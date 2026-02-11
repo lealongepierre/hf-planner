@@ -1,13 +1,14 @@
 from datetime import time
 
 import pytest
+from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
+
 from app.core.security import get_password_hash
 from app.database.connection import get_session
 from app.main import app
 from app.models import Concert, User
-from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
 
 
 @pytest.fixture(name="engine")
