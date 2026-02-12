@@ -27,10 +27,12 @@ RUN apk add --no-cache gettext
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create nginx configuration for SPA routing with API proxy
-RUN cat > /etc/nginx/conf.d/default.conf <<'EOF'
+# Create nginx configuration TEMPLATE with environment variable placeholders
+# Only ${BACKEND_URL} and ${PORT} are substituted at runtime
+# Nginx variables ($host, $remote_addr, etc.) are left untouched
+RUN cat > /etc/nginx/conf.d/default.conf.template <<'EOF'
 server {
-    listen 80;
+    listen ${PORT};
     server_name _;
 
     root /usr/share/nginx/html;
@@ -47,7 +49,7 @@ server {
 
     # API proxy - forward /api requests to backend service
     location /api {
-        proxy_pass http://backend-service:8000;
+        proxy_pass ${BACKEND_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -75,6 +77,10 @@ server {
 }
 EOF
 
+# Default values: compatible with docker-compose (backend-service:8000, port 80)
+ENV BACKEND_URL=http://backend-service:8000
+ENV PORT=80
+
 # Adjust permissions for nginx user (already exists in nginx:alpine)
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chown -R nginx:nginx /var/cache/nginx && \
@@ -85,12 +91,13 @@ RUN chown -R nginx:nginx /usr/share/nginx/html && \
 # Switch to non-root user
 USER nginx
 
-# Expose port
+# Expose port (overridden by PORT env var at runtime)
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+    CMD wget --quiet --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# At startup: substitute env vars in template, then start nginx
+CMD envsubst '${BACKEND_URL} ${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+    nginx -g 'daemon off;'
