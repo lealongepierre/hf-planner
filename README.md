@@ -262,7 +262,9 @@ Add these secrets in your GitHub repository settings:
 
 ### 6. Deploy
 
-Trigger the deployment manually from GitHub Actions: **Actions > Deploy to Cloud Run > Run workflow**
+```bash
+gh workflow run "Deploy to Cloud Run" --ref deploy/cloud-run
+```
 
 ## License
 
