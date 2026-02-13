@@ -210,6 +210,7 @@ gcloud services enable \
 ```bash
 gcloud sql instances create hf-planner-db \
   --database-version=POSTGRES_16 \
+  --edition=ENTERPRISE \
   --tier=db-f1-micro \
   --region=europe-west1 \
   --storage-size=10GB

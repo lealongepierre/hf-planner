@@ -209,6 +209,13 @@ __marimo__/
 # Claude code
 CLAUDE.local.md
 
+# macOS
+.DS_Store
+
+# GCP service account keys
+key.json
+*.key.json
+
 # Frontend (Node.js / React)
 frontend/node_modules/
 frontend/dist/
