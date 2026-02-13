@@ -63,7 +63,7 @@ jobs:
             --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             --region ${{ env.GCP_REGION }} \
             --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }}" \
-            --add-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
+            --set-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
             --command "alembic" \
             --args "upgrade,head" \
             --wait \
@@ -100,7 +100,7 @@ jobs:
               JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }},\
               JWT_ALGORITHM=HS256,\
               JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30" \
-            --add-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
+            --set-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
             --allow-unauthenticated \
             --port 8000 \
             --min-instances 0 \
