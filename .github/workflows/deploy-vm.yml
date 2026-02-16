@@ -1,0 +1,34 @@
+name: Deploy to VM
+
+on:
+  workflow_dispatch: # Manual trigger only
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/hf-planner
+
+            # Pull latest code
+            git fetch origin deploy/vm-docker-compose
+            git checkout deploy/vm-docker-compose
+            git pull origin deploy/vm-docker-compose
+
+            # Build and restart containers
+            docker compose -f docker-compose.prod.yml up -d --build
+
+            # Run migrations and seed
+            docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+            docker compose -f docker-compose.prod.yml exec -T backend python -m app.utils.seed
+
+            echo "=== Deployment Complete ==="
+            docker compose -f docker-compose.prod.yml ps
