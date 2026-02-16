@@ -74,6 +74,23 @@ jobs:
             --wait \
             --quiet
 
+      - name: Seed database with concert data
+        run: |
+          gcloud run jobs deploy seed \
+            --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            --region ${{ env.GCP_REGION }} \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" \
+            --set-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
+            --command "python" \
+            --args "-m,app.utils.seed" \
+            --wait \
+            --quiet
+
+          gcloud run jobs execute seed \
+            --region ${{ env.GCP_REGION }} \
+            --wait \
+            --quiet
+
   deploy:
     name: Deploy to Cloud Run
     runs-on: ubuntu-latest
