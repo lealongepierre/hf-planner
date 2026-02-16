@@ -81,8 +81,7 @@ jobs:
             --region ${{ env.GCP_REGION }} \
             --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" \
             --set-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
-            --command "python" \
-            --args "-m,app.utils.seed" \
+            --command "python,-m,app.utils.seed" \
             --wait \
             --quiet
 
