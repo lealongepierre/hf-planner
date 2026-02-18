@@ -217,8 +217,15 @@ gcloud compute firewall-rules create allow-https \
 # SSH into the VM
 gcloud compute ssh hf-planner-vm --zone=europe-west1-b
 
-# Run the setup script (installs Docker, git)
-curl -sSL https://raw.githubusercontent.com/<your-user>/hf-planner/deploy/vm-docker-compose/scripts/vm-setup.sh | bash
+# Install Docker, Docker Compose, and git
+sudo apt-get update && sudo apt-get install -y ca-certificates curl git
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo usermod -aG docker "$USER"
 
 # Log out and back in for docker group to take effect
 exit
@@ -227,14 +234,22 @@ gcloud compute ssh hf-planner-vm --zone=europe-west1-b
 
 ### 3. Clone and Configure
 
+For a private repo, set up an SSH key on the VM first:
+
 ```bash
-git clone <repository-url> ~/hf-planner
+# Generate SSH key for GitHub
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+# Add this public key at https://github.com/settings/keys
+
+# Clone and checkout
+git clone git@github.com:<your-user>/hf-planner.git ~/hf-planner
 cd ~/hf-planner
 git checkout deploy/vm-docker-compose
 
-# Create production .env from template
+# Create production .env from template and fill in secrets
 cp .env.example.prod .env
-nano .env  # Set POSTGRES_PASSWORD, JWT_SECRET_KEY, DOMAIN
+nano .env  # Set POSTGRES_PASSWORD, JWT_SECRET_KEY (use: openssl rand -hex 32)
 ```
 
 ### 4. SSH Key for GitHub Actions

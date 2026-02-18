@@ -8,7 +8,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
-      DOMAIN: ${DOMAIN:-localhost}
+      DOMAIN: ${DOMAIN:-}
     depends_on:
       frontend:
         condition: service_healthy
