@@ -17,6 +17,7 @@ export function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export function LoginPage() {
 
     try {
       if (isSignup) {
-        await authApi.signup({ username, password });
+        await authApi.signup({ username, password, access_code: accessCode || undefined });
         // After signup, automatically sign in
         const tokenResponse = await authApi.signin({ username, password });
         authUtils.setToken(tokenResponse.access_token);
@@ -129,6 +130,26 @@ export function LoginPage() {
               </div>
             </div>
 
+            {isSignup && (
+              <div>
+                <label htmlFor="accessCode" className="block text-sm font-medium text-gray-700">
+                  Access Code
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="accessCode"
+                    name="accessCode"
+                    type="text"
+                    required
+                    value={accessCode}
+                    onChange={(e) => setAccessCode(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter the shared access code"
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
@@ -142,7 +163,7 @@ export function LoginPage() {
 
           <div className="mt-6">
             <button
-              onClick={() => setIsSignup(!isSignup)}
+              onClick={() => { setIsSignup(!isSignup); setAccessCode(''); setError(''); }}
               className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500 cursor-pointer"
             >
               {isSignup ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}

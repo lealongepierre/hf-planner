@@ -1,6 +1,7 @@
 export interface SignupRequest {
   username: string;
   password: string;
+  access_code?: string;
 }
 
 export interface SigninRequest {
