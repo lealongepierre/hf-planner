@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def signup(request: SignUpRequest, session: Session = Depends(get_session)):
-    required_code = settings.SIGNUP_ACCESS_CODE
+    required_code = settings.SIGNUP_ACCESS_CODE or None
     if required_code is not None:
         if not request.access_code or not secrets.compare_digest(
             request.access_code, required_code
@@ -40,6 +40,7 @@ def signup(request: SignUpRequest, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(new_user)
 
+    assert new_user.id is not None
     return UserResponse(id=new_user.id, username=new_user.username)
 
 
