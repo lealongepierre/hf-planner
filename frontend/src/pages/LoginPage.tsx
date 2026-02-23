@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api';
 import { authUtils } from '../utils/auth';
+import { useUser } from '../contexts/UserContext';
 import type { AxiosError } from 'axios';
 
 interface ValidationError {
@@ -21,6 +22,7 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +35,12 @@ export function LoginPage() {
         // After signup, automatically sign in
         const tokenResponse = await authApi.signin({ username, password });
         authUtils.setToken(tokenResponse.access_token);
+        await refreshUser();
         navigate('/concerts');
       } else {
         const tokenResponse = await authApi.signin({ username, password });
         authUtils.setToken(tokenResponse.access_token);
+        await refreshUser();
         navigate('/concerts');
       }
     } catch (err) {
