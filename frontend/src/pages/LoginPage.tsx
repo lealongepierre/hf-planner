@@ -140,7 +140,6 @@ export function LoginPage() {
                     id="accessCode"
                     name="accessCode"
                     type="text"
-                    required
                     value={accessCode}
                     onChange={(e) => setAccessCode(e.target.value)}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -163,7 +162,7 @@ export function LoginPage() {
 
           <div className="mt-6">
             <button
-              onClick={() => { setIsSignup(!isSignup); setAccessCode(''); setError(''); }}
+              onClick={() => { setIsSignup(!isSignup); setAccessCode(''); }}
               className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500 cursor-pointer"
             >
               {isSignup ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
