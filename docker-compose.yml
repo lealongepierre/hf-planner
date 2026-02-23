@@ -30,6 +30,7 @@ services:
       JWT_SECRET_KEY: your-secret-key-change-in-production
       JWT_ALGORITHM: HS256
       JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      SIGNUP_ACCESS_CODE: ${SIGNUP_ACCESS_CODE:-}
     ports:
       - "8000:8000"
     depends_on:
