@@ -21,19 +21,16 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const [username, setUsername] = useState<string>('');
   const [isPublic, setIsPublic] = useState(false);
-  const isAuthenticated = authUtils.isAuthenticated();
-
   const refreshUser = useCallback(async () => {
-    if (isAuthenticated) {
-      try {
-        const user = await usersApi.getCurrentUser();
-        setUsername(user.username);
-        setIsPublic(user.favorites_public);
-      } catch (err) {
-        console.error('Failed to fetch current user:', err);
-      }
+    if (!authUtils.isAuthenticated()) return;
+    try {
+      const user = await usersApi.getCurrentUser();
+      setUsername(user.username);
+      setIsPublic(user.favorites_public);
+    } catch (err) {
+      console.error('Failed to fetch current user:', err);
     }
-  }, [isAuthenticated]);
+  }, []);
 
   const toggleVisibility = async () => {
     try {

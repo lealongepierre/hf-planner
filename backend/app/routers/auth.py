@@ -1,6 +1,9 @@
+import secrets
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
+from app.core.config import settings
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.database.connection import get_session
 from app.models import User
@@ -11,6 +14,16 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def signup(request: SignUpRequest, session: Session = Depends(get_session)):
+    required_code = settings.SIGNUP_ACCESS_CODE or None
+    if required_code is not None:
+        if not request.access_code or not secrets.compare_digest(
+            request.access_code, required_code
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Invalid access code",
+            )
+
     statement = select(User).where(User.username == request.username)
     existing_user = session.exec(statement).first()
 
@@ -27,6 +40,7 @@ def signup(request: SignUpRequest, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(new_user)
 
+    assert new_user.id is not None
     return UserResponse(id=new_user.id, username=new_user.username)
 
 
