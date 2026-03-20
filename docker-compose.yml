@@ -29,7 +29,7 @@ services:
       DATABASE_URL: postgresql://hfplanner:hfplanner@postgres:5432/hfplanner
       JWT_SECRET_KEY: your-secret-key-change-in-production
       JWT_ALGORITHM: HS256
-      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 10080
       SIGNUP_ACCESS_CODE: ${SIGNUP_ACCESS_CODE:-}
     ports:
       - "8000:8000"
