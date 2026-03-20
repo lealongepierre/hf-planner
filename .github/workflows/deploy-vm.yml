@@ -19,9 +19,9 @@ jobs:
             cd ~/hf-planner
 
             # Pull latest code
-            git fetch origin deploy/vm-docker-compose
-            git checkout deploy/vm-docker-compose
-            git pull origin deploy/vm-docker-compose
+            git fetch origin main
+            git checkout main
+            git pull origin main
 
             # Build and restart containers
             docker compose -f docker-compose.prod.yml up -d --build

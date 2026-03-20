@@ -256,7 +256,7 @@ cat ~/.ssh/id_ed25519.pub
 # Clone and checkout
 git clone git@github.com:<your-user>/hf-planner.git ~/hf-planner
 cd ~/hf-planner
-git checkout deploy/vm-docker-compose
+git checkout main
 
 # Create production .env from template and fill in secrets
 cp .env.example.prod .env
@@ -292,7 +292,7 @@ docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
 docker compose -f docker-compose.prod.yml exec backend python -m app.utils.seed
 
 # Subsequent deployments via GitHub Actions
-gh workflow run "Deploy to VM" --ref deploy/vm-docker-compose
+gh workflow run "Deploy to VM" --ref main
 ```
 
 ### Cost Management
