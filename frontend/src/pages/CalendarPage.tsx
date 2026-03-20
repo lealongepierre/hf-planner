@@ -93,7 +93,9 @@ export function CalendarPage() {
       const data = await concertsApi.getConcerts({});
       setConcerts(data);
       if (data.length > 0 && !selectedDay) {
-        const firstDay = data[0].festival_day || data[0].day;
+        const dayOrder = ['Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const availableDays = new Set(data.map(c => c.festival_day || c.day));
+        const firstDay = dayOrder.find(d => availableDays.has(d)) ?? (data[0].festival_day || data[0].day);
         setSelectedDay(firstDay);
       }
     } catch (err) {
@@ -157,10 +159,11 @@ export function CalendarPage() {
 
   const timeSlots = getTimeSlots();
 
-  // Helper to convert time string to minutes since 12:00
+  // Helper to convert time string to minutes since midnight.
+  // Hours < 6 are after-midnight sets (00:xx, 01:xx, ...) and get +24h offset.
   const getMinutes = (time: string) => {
     const [hour, min] = time.split(':').map(Number);
-    return (hour < 12 ? hour + 24 : hour) * 60 + min;
+    return (hour < 6 ? hour + 24 : hour) * 60 + min;
   };
 
   const getConcertPosition = (concert: Concert) => {
