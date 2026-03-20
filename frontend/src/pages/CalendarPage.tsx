@@ -150,7 +150,7 @@ export function CalendarPage() {
 
   const getTimeSlots = () => {
     const slots: string[] = [];
-    for (let hour = 12; hour <= 27; hour++) {
+    for (let hour = 10; hour <= 27; hour++) {
       const displayHour = hour > 23 ? hour - 24 : hour;
       slots.push(`${displayHour.toString().padStart(2, '0')}:00`);
     }
@@ -167,8 +167,8 @@ export function CalendarPage() {
   };
 
   const getConcertPosition = (concert: Concert) => {
-    const startMinutes = getMinutes(concert.start_time) - (12 * 60);
-    const endMinutes = getMinutes(concert.end_time) - (12 * 60);
+    const startMinutes = getMinutes(concert.start_time) - (10 * 60);
+    const endMinutes = getMinutes(concert.end_time) - (10 * 60);
     const duration = endMinutes - startMinutes;
 
     return {
