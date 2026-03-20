@@ -16,10 +16,10 @@ A web application for planning your Hellfest 2026 concert attendance.
 
 ## Roadmap
 
-- Let users delete their account or change their password
+- Let users delete their account
 - Link each concert to the band's Spotify page
 - Let users add other types of items (than concerts) to the personal calendar (e.g. shower time, nap...)
-- Handle forgotten password
+- Handle forgotten password, let users change their password
 
 ## Tech Stack
 
