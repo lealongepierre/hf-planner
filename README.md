@@ -1,6 +1,10 @@
 # Hellfest Planner
 
-A web application for planning your concert attendance at music festivals. Built with Python, FastAPI, and PostgreSQL.
+A web application for planning your Hellfest 2026 concert attendance.
+
+**Live:** https://nessie-cooper.fr (this is my cat's name)
+
+> **Note:** ⚠️ Concert times are currently fake ones — the official 2026 timetable has not been released yet. Times will be updated once the real schedule is announced.
 
 ## Features
 
@@ -9,6 +13,13 @@ A web application for planning your concert attendance at music festivals. Built
 - Filter concerts by day and stage
 - Mark concerts as favorites
 - View personalized festival agenda
+
+## Roadmap
+
+- Let users delete their account
+- Link each concert to the band's Spotify page
+- Let users add other types of items (than concerts) to the personal calendar (e.g. shower time, nap...)
+- Handle forgotten password
 
 ## Tech Stack
 
