@@ -176,6 +176,128 @@ cd backend
 poetry run pytest
 ```
 
+## VM + Docker Compose Deployment
+
+### Architecture
+
+```
+Internet → GCE VM (public IP)
+  → Caddy (:443/:80) reverse proxy with auto HTTPS
+    → / → Frontend (nginx) → static React files
+    → /api → Backend (FastAPI) → PostgreSQL
+```
+
+All services run on a single VM via Docker Compose. Caddy handles HTTPS with automatic Let's Encrypt certificates.
+
+### Prerequisites
+
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed and configured
+
+### 1. Create GCE VM
+
+```bash
+gcloud compute instances create hf-planner-vm \
+  --zone=europe-west1-b \
+  --machine-type=e2-small \
+  --image-family=debian-12 \
+  --image-project=debian-cloud \
+  --boot-disk-size=20GB \
+  --tags=http-server,https-server
+
+# Open firewall for HTTP/HTTPS
+gcloud compute firewall-rules create allow-http \
+  --allow tcp:80 --target-tags http-server
+gcloud compute firewall-rules create allow-https \
+  --allow tcp:443 --target-tags https-server
+```
+
+### 2. VM Setup
+
+```bash
+# SSH into the VM
+gcloud compute ssh hf-planner-vm --zone=europe-west1-b
+
+# Install Docker, Docker Compose, and git
+sudo apt-get update && sudo apt-get install -y ca-certificates curl git
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo usermod -aG docker "$USER"
+
+# Log out and back in for docker group to take effect
+exit
+gcloud compute ssh hf-planner-vm --zone=europe-west1-b
+```
+
+### 3. Clone and Configure
+
+For a private repo, set up an SSH key on the VM first:
+
+```bash
+# Generate SSH key for GitHub
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+# Add this public key at https://github.com/settings/keys
+
+# Clone and checkout
+git clone git@github.com:<your-user>/hf-planner.git ~/hf-planner
+cd ~/hf-planner
+git checkout deploy/vm-docker-compose
+
+# Create production .env from template and fill in secrets
+cp .env.example.prod .env
+nano .env  # Set POSTGRES_PASSWORD, JWT_SECRET_KEY (use: openssl rand -hex 32)
+```
+
+### 4. SSH Key for GitHub Actions
+
+```bash
+# On the VM, generate a deploy key
+ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N ""
+cat ~/.ssh/deploy_key.pub >> ~/.ssh/authorized_keys
+
+# Copy the private key to add as GitHub secret
+cat ~/.ssh/deploy_key
+```
+
+### 5. GitHub Secrets
+
+| Secret | Value |
+|--------|-------|
+| `VM_SSH_KEY` | Private key from step 4 |
+| `VM_HOST` | VM's external IP (`gcloud compute instances describe hf-planner-vm --zone=europe-west1-b --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`) |
+| `VM_USER` | Your SSH username on the VM |
+
+### 6. Deploy
+
+```bash
+# First time: start manually on the VM
+cd ~/hf-planner
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
+docker compose -f docker-compose.prod.yml exec backend python -m app.utils.seed
+
+# Subsequent deployments via GitHub Actions
+gh workflow run "Deploy to VM" --ref deploy/vm-docker-compose
+```
+
+### Cost Management
+
+- `e2-small` (2 vCPU, 2GB): ~$13/month
+- `e2-micro` (free tier, 0.25 vCPU, 1GB): ~$6/month or free
+- Boot disk 20GB: ~$0.80/month
+
+```bash
+# Stop VM when not in use
+gcloud compute instances stop hf-planner-vm --zone=europe-west1-b
+
+# Restart when needed
+gcloud compute instances start hf-planner-vm --zone=europe-west1-b
+```
+
 ## License
 
 MIT

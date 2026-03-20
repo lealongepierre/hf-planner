@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import settings
 from app.models import User
 from app.schemas.auth import SignInRequest, SignUpRequest, TokenResponse
 
@@ -138,3 +139,69 @@ def test_signin_token_is_valid_jwt(client: TestClient, test_user: User):
     )
     token_response = TokenResponse.model_validate(response.json())
     assert token_response.access_token.count(".") == 2
+
+
+@pytest.mark.parametrize(
+    "test_id,access_code_setting,request_code,expected_status",
+    [
+        pytest.param(
+            "correct_code",
+            "hellfest2025",
+            "hellfest2025",
+            201,
+            id="correct_code",
+        ),
+        pytest.param(
+            "wrong_code",
+            "hellfest2025",
+            "wrongcode",
+            403,
+            id="wrong_code",
+        ),
+        pytest.param(
+            "missing_code_when_required",
+            "hellfest2025",
+            None,
+            403,
+            id="missing_code_when_required",
+        ),
+        pytest.param(
+            "no_code_required",
+            None,
+            None,
+            201,
+            id="no_code_required",
+        ),
+    ],
+)
+def test_signup_access_code(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    access_code_setting: str | None,
+    request_code: str | None,
+    expected_status: int,
+):
+    """Test signup access code validation.
+
+    - Correct access code returns 201
+    - Wrong access code returns 403
+    - Missing access code when required returns 403
+    - No access code required (setting is None) returns 201
+    """
+    monkeypatch.setattr(settings, "SIGNUP_ACCESS_CODE", access_code_setting)
+
+    request_data = {
+        "username": f"user_{test_id}",
+        "password": "password123",
+    }
+    if request_code is not None:
+        request_data["access_code"] = request_code
+
+    response = client.post("/api/v1/auth/signup", json=request_data)
+    assert response.status_code == expected_status
+
+    if expected_status == 403:
+        assert "invalid access code" in response.json()["detail"].lower()
+    elif expected_status == 201:
+        assert response.json()["username"] == f"user_{test_id}"

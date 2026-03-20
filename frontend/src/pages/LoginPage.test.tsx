@@ -8,6 +8,11 @@ import { http, HttpResponse } from 'msw';
 
 const API_URL = 'http://localhost:8000/api/v1';
 
+// Mock useUser context
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({ refreshUser: vi.fn().mockResolvedValue(undefined) }),
+}));
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {

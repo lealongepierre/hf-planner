@@ -1,76 +1,77 @@
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: hf-planner-db
-    environment:
-      POSTGRES_USER: hfplanner
-      POSTGRES_PASSWORD: hfplanner
-      POSTGRES_DB: hfplanner
+  caddy:
+    image: caddy:2-alpine
     ports:
-      - "5432:5432"
+      - "80:80"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hfplanner"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - hf-network
 
-  # Backend API
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - hf-network
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: hf-planner-backend
     environment:
-      DATABASE_URL: postgresql://hfplanner:hfplanner@postgres:5432/hfplanner
-      JWT_SECRET_KEY: your-secret-key-change-in-production
-      JWT_ALGORITHM: HS256
-      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
       SIGNUP_ACCESS_CODE: ${SIGNUP_ACCESS_CODE:-}
-    ports:
-      - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - hf-network
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
       interval: 30s
       timeout: 3s
       start_period: 5s
       retries: 3
-    # For development: mount source code
-    # volumes:
-    #   - ./backend:/app
+    restart: unless-stopped
+    networks:
+      - hf-network
 
-  # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:8000
-    container_name: hf-planner-frontend
     environment:
       BACKEND_URL: http://backend:8000
-      PORT: "80"
-    ports:
-      - "80:80"
+      PORT: "8080"
     depends_on:
       - backend
-    networks:
-      - hf-network
     healthcheck:
-      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:8080/health || exit 1"]
       interval: 30s
       timeout: 3s
       start_period: 5s
       retries: 3
+    restart: unless-stopped
+    networks:
+      - hf-network
 
 networks:
   hf-network:
@@ -78,3 +79,5 @@ networks:
 
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:
