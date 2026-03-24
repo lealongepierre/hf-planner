@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authUtils } from '../utils/auth';
 import { useUser } from '../contexts/UserContext';
 
@@ -8,6 +8,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const isAuthenticated = authUtils.isAuthenticated();
   const { username, isPublic, toggleVisibility } = useUser();
 
@@ -16,9 +17,16 @@ export function Layout({ children }: LayoutProps) {
     navigate('/login');
   };
 
+  const navLinks = [
+    { to: '/concerts', label: 'Concerts', icon: '🎸' },
+    { to: '/calendar', label: 'Calendar', icon: '📅' },
+    { to: '/favorites', label: 'My Favorites', icon: '⭐️' },
+    { to: '/users', label: 'Friends', icon: '👥' },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
+      {/* Top Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -26,20 +34,18 @@ export function Layout({ children }: LayoutProps) {
               <Link to="/" className="flex items-center text-xl font-bold text-gray-900">
                 🔥 Hellfest Planner 🔥
               </Link>
+              {/* Desktop nav links — hidden on mobile */}
               {isAuthenticated && (
-                <div className="ml-10 flex items-center space-x-4">
-                  <Link to="/concerts" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    🎸 Concerts
-                  </Link>
-                  <Link to="/calendar" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    📅 Calendar
-                  </Link>
-                  <Link to="/favorites" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    ⭐️ My Favorites
-                  </Link>
-                  <Link to="/users" className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                    👥 Friends
-                  </Link>
+                <div className="hidden sm:ml-10 sm:flex sm:items-center sm:space-x-4">
+                  {navLinks.map(({ to, label, icon }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      {icon} {label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
@@ -75,10 +81,33 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      {/* Main Content — add bottom padding on mobile to avoid overlap with bottom nav */}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pb-20 sm:pb-6">
         {children}
       </main>
+
+      {/* Bottom Navigation — mobile only */}
+      {isAuthenticated && (
+        <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+          <div className="flex justify-around">
+            {navLinks.map(({ to, label, icon }) => {
+              const isActive = location.pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`flex flex-col items-center py-2 px-3 text-xs font-medium flex-1 ${
+                    isActive ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  <span className="text-xl">{icon}</span>
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </div>
   );
 }
