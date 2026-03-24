@@ -171,9 +171,11 @@ export function CalendarPage() {
     const endMinutes = getMinutes(concert.end_time) - (10 * 60);
     const duration = endMinutes - startMinutes;
 
+    const heightPx = Math.max((duration / 60) * 80 - 2, 20);
     return {
       top: `${(startMinutes / 60) * 80}px`,
-      height: `${(duration / 60) * 80}px`,
+      height: `${heightPx}px`,
+      heightPx,
     };
   };
 
@@ -694,9 +696,11 @@ export function CalendarPage() {
                                                   </button>
                                                 )}
                                               </div>
-                                              <div className="text-xs text-white truncate" title={concert.stage}>
-                                                {concert.stage}
-                                              </div>
+                                              {position.heightPx >= 80 && (
+                                                <div className="text-xs text-white truncate" title={concert.stage}>
+                                                  {concert.stage}
+                                                </div>
+                                              )}
                                               <div className="text-xs text-white">
                                                 {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                               </div>
@@ -818,9 +822,11 @@ export function CalendarPage() {
                                           </button>
                                         )}
                                       </div>
-                                      <div className="text-xs text-white truncate" title={concert.stage}>
-                                        {concert.stage}
-                                      </div>
+                                      {position.heightPx >= 80 && (
+                                        <div className="text-xs text-white truncate" title={concert.stage}>
+                                          {concert.stage}
+                                        </div>
+                                      )}
                                       <div className="text-xs text-white">
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
