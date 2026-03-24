@@ -171,7 +171,7 @@ export function CalendarPage() {
     const endMinutes = getMinutes(concert.end_time) - (10 * 60);
     const duration = endMinutes - startMinutes;
 
-    const heightPx = Math.max((duration / 60) * 80 - 2, 20);
+    const heightPx = Math.max((duration / 60) * 80, 20);
     return {
       top: `${(startMinutes / 60) * 80}px`,
       height: `${heightPx}px`,
