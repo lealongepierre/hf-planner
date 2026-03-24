@@ -652,7 +652,7 @@ export function CalendarPage() {
                                 {/* Single block with horizontal color sections for all users */}
                                 <div
                                   className="relative border border-white rounded shadow-sm hover:opacity-90 transition-all overflow-hidden flex"
-                                  style={{ height: position.height, minHeight: '60px' }}
+                                  style={{ height: position.height, minHeight: '20px' }}
                                 >
                                   {usersWhoFavorited.map((user, idx) => {
                                     const color = user.isCurrentUser ? userColor : getFriendColor(user.username);
@@ -798,7 +798,7 @@ export function CalendarPage() {
                                 >
                                   <div
                                     className={`${userColor.bg} ${userColor.border} p-2 rounded shadow-sm hover:opacity-90 transition-all overflow-hidden`}
-                                    style={{ height: position.height, minHeight: '60px' }}
+                                    style={{ height: position.height, minHeight: '20px' }}
                                   >
                                     <div className="flex flex-col h-full">
                                       <div className="flex items-start justify-between gap-1 mb-1">
