@@ -4,7 +4,7 @@ A web application for planning your Hellfest 2026 concert attendance.
 
 **Live:** https://nessie-cooper.fr (this is my cat's name)
 
-> **Note:** ⚠️ Concert times are currently fake ones — the official 2026 timetable has not been released yet. Times will be updated once the real schedule is announced.
+> **Note:** ⚠️ Right now, concerts and concert times are those that were published on March 24th, 2026. They will be updated as soon as possible in the case of changes.
 
 ## Features
 
