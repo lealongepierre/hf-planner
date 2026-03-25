@@ -171,17 +171,20 @@ def test_update_rating_non_wesker_returns_403(
     assert "not authorized" in response.json()["detail"].lower()
 
 
-def test_update_rating_unauthenticated_returns_401(
+def test_update_rating_unauthenticated_returns_403(
     client: TestClient,
     test_concerts: list[Concert],
 ):
-    """Unauthenticated request to set a rating returns 401."""
+    """Unauthenticated request to set a rating returns 403.
+
+    HTTPBearer raises 403 when the Authorization header is absent.
+    """
     concert_id = test_concerts[0].id
     response = client.patch(
         f"/api/v1/concerts/{concert_id}/rating",
         json={"rating": 10},
     )
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 @pytest.mark.parametrize(
