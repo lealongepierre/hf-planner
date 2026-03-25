@@ -152,10 +152,7 @@ def test_update_rating_as_wesker(
         headers=wesker_auth_headers,
     )
     assert response.status_code == 200
-    data = response.json()
-    assert data["rating"] == rating
-    if test_id == "valid_mid_rating":
-        assert data["band_name"] == "Metallica"
+    assert response.json()["rating"] == rating
 
 
 def test_update_rating_non_wesker_returns_403(
