@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.models import Concert
@@ -118,3 +119,118 @@ def test_after_midnight_concerts_do_not_appear_in_calendar_day(
 
     band_names = [concert["band_name"] for concert in data]
     assert "Sleep" not in band_names
+
+
+# --- Rating endpoint ---
+
+
+@pytest.mark.parametrize(
+    "rating,test_id",
+    [
+        (15, "valid_mid_rating"),
+        (0, "valid_zero"),
+        (20, "valid_max"),
+        (None, "clear_rating"),
+    ],
+)
+def test_update_rating_as_wesker(
+    client: TestClient,
+    wesker_auth_headers: dict,
+    test_concerts: list[Concert],
+    rating: int | None,
+    test_id: str,
+):
+    """Wesker can set any rating between 0 and 20, or clear it with null.
+    - Valid mid-range rating is saved and returned
+    - Zero and max boundary values are accepted
+    - Null clears an existing rating
+    """
+    concert_id = test_concerts[0].id
+    response = client.patch(
+        f"/api/v1/concerts/{concert_id}/rating",
+        json={"rating": rating},
+        headers=wesker_auth_headers,
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["rating"] == rating
+    if test_id == "valid_mid_rating":
+        assert data["band_name"] == "Metallica"
+
+
+def test_update_rating_non_wesker_returns_403(
+    client: TestClient,
+    auth_headers: dict,
+    test_concerts: list[Concert],
+):
+    """Non-Wesker authenticated user cannot set a rating."""
+    concert_id = test_concerts[0].id
+    response = client.patch(
+        f"/api/v1/concerts/{concert_id}/rating",
+        json={"rating": 10},
+        headers=auth_headers,
+    )
+    assert response.status_code == 403
+    assert "not authorized" in response.json()["detail"].lower()
+
+
+def test_update_rating_unauthenticated_returns_401(
+    client: TestClient,
+    test_concerts: list[Concert],
+):
+    """Unauthenticated request to set a rating returns 401."""
+    concert_id = test_concerts[0].id
+    response = client.patch(
+        f"/api/v1/concerts/{concert_id}/rating",
+        json={"rating": 10},
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "rating,test_id",
+    [
+        (21, "above_max"),
+        (-1, "below_min"),
+    ],
+)
+def test_update_rating_out_of_range_returns_422(
+    client: TestClient,
+    wesker_auth_headers: dict,
+    test_concerts: list[Concert],
+    rating: int,
+    test_id: str,
+):
+    """Rating values outside 0-20 are rejected with 422.
+    - 21 is above maximum
+    - -1 is below minimum
+    """
+    concert_id = test_concerts[0].id
+    response = client.patch(
+        f"/api/v1/concerts/{concert_id}/rating",
+        json={"rating": rating},
+        headers=wesker_auth_headers,
+    )
+    assert response.status_code == 422
+
+
+def test_update_rating_nonexistent_concert_returns_404(
+    client: TestClient,
+    wesker_auth_headers: dict,
+):
+    """Rating a concert that does not exist returns 404."""
+    response = client.patch(
+        "/api/v1/concerts/999/rating",
+        json={"rating": 10},
+        headers=wesker_auth_headers,
+    )
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"].lower()
+
+
+def test_concert_response_includes_rating_field(client: TestClient, test_concerts: list[Concert]):
+    """GET /concerts response includes a rating field (null by default)."""
+    response = client.get("/api/v1/concerts")
+    data = response.json()[0]
+    assert "rating" in data
+    assert data["rating"] is None

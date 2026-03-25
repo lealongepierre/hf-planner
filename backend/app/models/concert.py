@@ -13,3 +13,4 @@ class Concert(SQLModel, table=True):
     start_time: time
     end_time: time
     stage: str = Field(index=True)
+    rating: int | None = Field(default=None)

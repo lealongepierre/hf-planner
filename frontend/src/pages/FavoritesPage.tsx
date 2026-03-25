@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { favoritesApi } from '../api';
+import { concertsApi, favoritesApi } from '../api';
 import type { Concert } from '../types';
 import { useUser } from '../contexts/UserContext';
 import type { AxiosError } from 'axios';
@@ -12,7 +12,10 @@ export function FavoritesPage() {
   const [favorites, setFavorites] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isPublic, toggleVisibility } = useUser();
+  const [editingRatingId, setEditingRatingId] = useState<number | null>(null);
+  const [ratingInput, setRatingInput] = useState('');
+  const { isPublic, toggleVisibility, username } = useUser();
+  const isWesker = username === 'Wesker';
 
   const loadFavorites = async () => {
     setLoading(true);
@@ -31,6 +34,20 @@ export function FavoritesPage() {
   useEffect(() => {
     loadFavorites();
   }, []);
+
+  const handleSaveRating = async (concertId: number) => {
+    const parsed = ratingInput === '' ? null : parseInt(ratingInput, 10);
+    if (parsed !== null && (isNaN(parsed) || parsed < 0 || parsed > 20)) return;
+    try {
+      const updated = await concertsApi.updateRating(concertId, parsed);
+      setFavorites(prev => prev.map(c => c.id === concertId ? { ...c, rating: updated.rating } : c));
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      alert(axiosError.response?.data?.detail || 'Failed to save rating');
+    } finally {
+      setEditingRatingId(null);
+    }
+  };
 
   const handleRemoveFavorite = async (concertId: number) => {
     try {
@@ -98,6 +115,9 @@ export function FavoritesPage() {
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Stage
                       </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Rating
+                      </th>
                       <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                         <span className="sr-only">Actions</span>
                       </th>
@@ -117,6 +137,35 @@ export function FavoritesPage() {
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {concert.stage}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {isWesker && editingRatingId === concert.id ? (
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                min={0}
+                                max={20}
+                                value={ratingInput}
+                                onChange={(e) => setRatingInput(e.target.value)}
+                                onBlur={() => handleSaveRating(concert.id)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveRating(concert.id);
+                                  if (e.key === 'Escape') setEditingRatingId(null);
+                                }}
+                                className="w-14 border border-gray-300 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                autoFocus
+                              />
+                              <span className="text-gray-400">/20</span>
+                            </div>
+                          ) : (
+                            <span
+                              className={isWesker ? 'cursor-pointer hover:text-indigo-600' : ''}
+                              onClick={isWesker ? () => { setEditingRatingId(concert.id); setRatingInput(concert.rating !== null ? String(concert.rating) : ''); } : undefined}
+                              title={isWesker ? 'Click to edit rating' : undefined}
+                            >
+                              {concert.rating !== null ? `★ ${concert.rating}/20` : <span className="text-gray-300">—/20</span>}
+                            </span>
+                          )}
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           <button

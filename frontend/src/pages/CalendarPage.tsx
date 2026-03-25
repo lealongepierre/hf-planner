@@ -21,7 +21,7 @@ export function CalendarPage() {
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<Set<string>>(new Set());
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [friendsPopup, setFriendsPopup] = useState<{ concertId: number; bandName: string } | null>(null);
-  const [concertInfoPopup, setConcertInfoPopup] = useState<{ bandName: string; startTime: string; endTime: string; stage: string } | null>(null);
+  const [concertInfoPopup, setConcertInfoPopup] = useState<{ bandName: string; startTime: string; endTime: string; stage: string; rating: number | null } | null>(null);
 
   useEffect(() => {
     loadConcerts();
@@ -372,7 +372,8 @@ export function CalendarPage() {
       bandName: concert.band_name,
       startTime: concert.start_time,
       endTime: concert.end_time,
-      stage: concert.stage
+      stage: concert.stage,
+      rating: concert.rating,
     });
   };
 
@@ -463,6 +464,24 @@ export function CalendarPage() {
         )}
       </div>
 
+      {view === 'favorites' && selectedFriendUsernames.size > 0 && (
+        <div className="mt-4 flex flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-indigo-500 flex-shrink-0" />
+            <span className="text-sm text-gray-700">{currentUsername || 'You'}</span>
+          </div>
+          {Array.from(selectedFriendUsernames).map(username => {
+            const color = getFriendColor(username);
+            return (
+              <div key={username} className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded ${color.bg} flex-shrink-0`} />
+                <span className="text-sm text-gray-700">{username}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {view === 'by-stage' && selectedDay && (
         <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
@@ -537,6 +556,11 @@ export function CalendarPage() {
                                       <div className={`text-xs ${isFavorite ? 'text-indigo-100' : 'text-gray-600'} mt-1`}>
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
+                                      {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
+                                        <div className={`text-xs font-medium mt-1 ${isFavorite ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                                          ★ {concert.rating}/20
+                                        </div>
+                                      )}
                                     </div>
                                     <button
                                       onClick={(e) => handleToggleFavorite(e, concert.id)}
@@ -704,6 +728,11 @@ export function CalendarPage() {
                                               <div className="text-xs text-white">
                                                 {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                               </div>
+                                              {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
+                                                <div className="text-xs font-medium text-yellow-300 mt-1">
+                                                  ★ {concert.rating}/20
+                                                </div>
+                                              )}
                                             </div>
                                           </div>
                                         )}
@@ -830,6 +859,11 @@ export function CalendarPage() {
                                       <div className="text-xs text-white">
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
+                                      {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
+                                        <div className="text-xs font-medium text-yellow-300 mt-1">
+                                          ★ {concert.rating}/20
+                                        </div>
+                                      )}
                                     </div>
 
                                     {/* Friend indicator */}
@@ -931,6 +965,15 @@ export function CalendarPage() {
                 <div>
                   <p className="text-sm text-gray-500">Stage</p>
                   <p className="font-medium">{concertInfoPopup.stage}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 text-gray-700">
+                <span className="text-lg">★</span>
+                <div>
+                  <p className="text-sm text-gray-500">Wesker's rating</p>
+                  <p className="font-medium">
+                    {concertInfoPopup.rating !== null ? `${concertInfoPopup.rating}/20` : 'Not yet rated'}
+                  </p>
                 </div>
               </div>
             </div>

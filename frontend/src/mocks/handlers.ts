@@ -54,6 +54,7 @@ export const handlers = [
         start_time: '20:00:00',
         end_time: '22:00:00',
         stage: 'Mainstage',
+        rating: null,
       },
       {
         id: 2,
@@ -63,8 +64,23 @@ export const handlers = [
         start_time: '21:00:00',
         end_time: '23:00:00',
         stage: 'Mainstage',
+        rating: 17,
       },
     ]);
+  }),
+
+  http.patch(`${API_URL}/concerts/:concertId/rating`, async ({ request }) => {
+    const body = await request.json() as { rating: number | null };
+    return HttpResponse.json({
+      id: 1,
+      band_name: 'Metallica',
+      day: 'Friday',
+      festival_day: 'Friday',
+      start_time: '20:00:00',
+      end_time: '22:00:00',
+      stage: 'Mainstage',
+      rating: body.rating,
+    });
   }),
 
   // Favorites endpoints
@@ -78,6 +94,7 @@ export const handlers = [
         start_time: '20:00:00',
         end_time: '22:00:00',
         stage: 'Mainstage',
+        rating: null,
       },
     ]);
   }),
@@ -100,6 +117,7 @@ export const handlers = [
         start_time: '21:00:00',
         end_time: '23:00:00',
         stage: 'Mainstage',
+        rating: 17,
       },
     ]);
   }),

@@ -13,3 +13,4 @@ class ConcertResponse(BaseModel):
     start_time: time
     end_time: time
     stage: str
+    rating: int | None

@@ -11,4 +11,9 @@ export const concertsApi = {
     const response = await apiClient.get<Concert>(`/concerts/${id}`);
     return response.data;
   },
+
+  async updateRating(id: number, rating: number | null): Promise<Concert> {
+    const response = await apiClient.patch<Concert>(`/concerts/${id}/rating`, { rating });
+    return response.data;
+  },
 };

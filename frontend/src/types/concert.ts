@@ -6,4 +6,5 @@ export interface Concert {
   start_time: string; // "HH:MM:SS" format
   end_time: string;   // "HH:MM:SS" format
   stage: string;
+  rating: number | null;
 }
