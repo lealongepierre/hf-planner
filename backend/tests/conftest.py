@@ -53,10 +53,7 @@ def test_user_fixture(session: Session):
     )
     session.add(user)
     session.commit()
-    session.flush()
     session.refresh(user)
-    session.expunge(user)
-    session.add(user)
     return user
 
 
@@ -78,10 +75,7 @@ def wesker_user_fixture(session: Session):
     )
     session.add(user)
     session.commit()
-    session.flush()
     session.refresh(user)
-    session.expunge(user)
-    session.add(user)
     return user
 
 
