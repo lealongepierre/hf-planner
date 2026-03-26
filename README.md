@@ -13,6 +13,9 @@ A web application for planning your Hellfest 2026 concert attendance.
 - Filter concerts by day and stage
 - Mark concerts as favorites
 - View personalized festival agenda
+- Concert calendar with by-stage, favorites, and shared-favorites views
+- Overlay friends' favorites on the calendar with a color legend
+- One designated user (configurable via `RATER_USERNAME`) can assign a score (0–20) to each concert, visible to all users on the concerts list, favorites, and calendar views
 
 ## Roadmap
 
@@ -136,9 +139,13 @@ Once the server is running, visit:
 - `POST /api/v1/auth/signup` - Create new user account
 - `POST /api/v1/auth/signin` - Login and get JWT token
 
+### Config
+- `GET /api/v1/config` - Get public app configuration (e.g. `rater_username`)
+
 ### Concerts
 - `GET /api/v1/concerts` - Get all concerts (supports ?day= and ?stage= filters)
 - `GET /api/v1/concerts/{id}` - Get specific concert
+- `PATCH /api/v1/concerts/{id}/rating` - Set or clear a concert rating (rater only)
 
 ### Favorites (Requires Authentication)
 - `POST /api/v1/favorites` - Add concert to favorites
@@ -178,7 +185,11 @@ DATABASE_URL=postgresql://hfplanner:hfplanner@localhost:5432/hfplanner
 JWT_SECRET_KEY=your-secret-key
 JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+SIGNUP_ACCESS_CODE=         # leave empty for open signup
+RATER_USERNAME=Wesker        # username allowed to set concert ratings
 ```
+
+`RATER_USERNAME` controls which account can assign scores (0–20) to concerts. The value is exposed publicly via `GET /api/v1/config` (it appears in the UI as "X's rating"), so it must not be a secret. To test the rating feature locally under your own account, set `RATER_USERNAME=<your username>`.
 
 ### Running Tests
 
