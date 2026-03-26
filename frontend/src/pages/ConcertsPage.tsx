@@ -18,7 +18,7 @@ export function ConcertsPage() {
   const [editingRatingId, setEditingRatingId] = useState<number | null>(null);
   const [ratingInput, setRatingInput] = useState('');
   const { username } = useUser();
-  const isWesker = username === 'Wesker';
+  const isWesker = username === 'lea';
 
   const loadConcerts = async () => {
     setLoading(true);
@@ -177,7 +177,7 @@ export function ConcertsPage() {
                       Stage
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Rating
+                      Wesker's rating
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Actions</span>
@@ -224,7 +224,7 @@ export function ConcertsPage() {
                             onClick={isWesker ? () => { setEditingRatingId(concert.id); setRatingInput(concert.rating !== null ? String(concert.rating) : ''); } : undefined}
                             title={isWesker ? 'Click to edit rating' : undefined}
                           >
-                            {concert.rating !== null ? `★ ${concert.rating}/20` : <span className="text-gray-300">—/20</span>}
+                            {concert.rating !== null ? `${concert.rating}/20` : <span className="text-gray-300">—/20</span>}
                           </span>
                         )}
                       </td>

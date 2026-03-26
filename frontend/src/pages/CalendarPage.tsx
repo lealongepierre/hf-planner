@@ -556,19 +556,21 @@ export function CalendarPage() {
                                       <div className={`text-xs ${isFavorite ? 'text-indigo-100' : 'text-gray-600'} mt-1`}>
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
-                                      {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
-                                        <div className={`text-xs font-medium mt-1 ${isFavorite ? 'text-yellow-300' : 'text-yellow-600'}`}>
-                                          ★ {concert.rating}/20
+                                    </div>
+                                    <div className="flex flex-col items-center flex-shrink-0">
+                                      <button
+                                        onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                        className="text-lg hover:scale-125 transition-transform cursor-pointer"
+                                        title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                                      >
+                                        {isFavorite ? '⭐' : '☆'}
+                                      </button>
+                                      {currentUsername === 'lea' && concert.rating !== null && (
+                                        <div className={`text-xs font-medium ${isFavorite ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                                          {concert.rating}/20
                                         </div>
                                       )}
                                     </div>
-                                    <button
-                                      onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                      className="flex-shrink-0 text-lg hover:scale-125 transition-transform cursor-pointer"
-                                      title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                                    >
-                                      {isFavorite ? '⭐' : '☆'}
-                                    </button>
                                   </div>
 
                                   {/* Friend indicator */}
@@ -701,24 +703,31 @@ export function CalendarPage() {
                                                 >
                                                   {concert.band_name}
                                                 </div>
-                                                {isUserFavorite && (
-                                                  <button
-                                                    onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
-                                                    title="Remove from favorites"
-                                                  >
-                                                    ⭐
-                                                  </button>
-                                                )}
-                                                {!isUserFavorite && usersWhoFavorited.length > 0 && (
-                                                  <button
-                                                    onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                                    className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
-                                                    title="Add to your favorites"
-                                                  >
-                                                    ☆
-                                                  </button>
-                                                )}
+                                                <div className="flex flex-col items-center flex-shrink-0">
+                                                  {isUserFavorite && (
+                                                    <button
+                                                      onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                                      className="text-base hover:scale-125 transition-transform cursor-pointer"
+                                                      title="Remove from favorites"
+                                                    >
+                                                      ⭐
+                                                    </button>
+                                                  )}
+                                                  {!isUserFavorite && usersWhoFavorited.length > 0 && (
+                                                    <button
+                                                      onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                                      className="text-base hover:scale-125 transition-transform cursor-pointer"
+                                                      title="Add to your favorites"
+                                                    >
+                                                      ☆
+                                                    </button>
+                                                  )}
+                                                  {currentUsername === 'lea' && concert.rating !== null && (
+                                                    <div className="text-xs font-medium text-yellow-300">
+                                                      {concert.rating}/20
+                                                    </div>
+                                                  )}
+                                                </div>
                                               </div>
                                               {position.heightPx >= 80 && (
                                                 <div className="text-xs text-white truncate" title={concert.stage}>
@@ -728,11 +737,6 @@ export function CalendarPage() {
                                               <div className="text-xs text-white">
                                                 {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                               </div>
-                                              {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
-                                                <div className="text-xs font-medium text-yellow-300 mt-1">
-                                                  ★ {concert.rating}/20
-                                                </div>
-                                              )}
                                             </div>
                                           </div>
                                         )}
@@ -841,15 +845,22 @@ export function CalendarPage() {
                                         >
                                           {concert.band_name}
                                         </div>
-                                        {isUserFavorite && (
-                                          <button
-                                            onClick={(e) => handleToggleFavorite(e, concert.id)}
-                                            className="flex-shrink-0 text-base hover:scale-125 transition-transform cursor-pointer"
-                                            title="Remove from favorites"
-                                          >
-                                            ⭐
-                                          </button>
-                                        )}
+                                        <div className="flex flex-col items-center flex-shrink-0">
+                                          {isUserFavorite && (
+                                            <button
+                                              onClick={(e) => handleToggleFavorite(e, concert.id)}
+                                              className="text-base hover:scale-125 transition-transform cursor-pointer"
+                                              title="Remove from favorites"
+                                            >
+                                              ⭐
+                                            </button>
+                                          )}
+                                          {currentUsername === 'lea' && concert.rating !== null && (
+                                            <div className="text-xs font-medium text-yellow-300">
+                                              {concert.rating}/20
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
                                       {position.heightPx >= 80 && (
                                         <div className="text-xs text-white truncate" title={concert.stage}>
@@ -859,11 +870,6 @@ export function CalendarPage() {
                                       <div className="text-xs text-white">
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
-                                      {currentUsername === 'Wesker' && position.heightPx >= 80 && concert.rating !== null && (
-                                        <div className="text-xs font-medium text-yellow-300 mt-1">
-                                          ★ {concert.rating}/20
-                                        </div>
-                                      )}
                                     </div>
 
                                     {/* Friend indicator */}
@@ -968,7 +974,7 @@ export function CalendarPage() {
                 </div>
               </div>
               <div className="flex items-center space-x-3 text-gray-700">
-                <span className="text-lg">★</span>
+                <span className="text-lg">🎯</span>
                 <div>
                   <p className="text-sm text-gray-500">Wesker's rating</p>
                   <p className="font-medium">

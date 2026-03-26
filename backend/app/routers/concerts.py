@@ -9,7 +9,7 @@ from app.schemas.concert import ConcertResponse
 
 router = APIRouter(prefix="/api/v1/concerts", tags=["Concerts"])
 
-_RATER_USERNAME = "Wesker"
+_RATER_USERNAME = "lea"
 
 
 class RatingUpdate(BaseModel):
