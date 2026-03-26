@@ -18,7 +18,7 @@ export const concertsApi = {
   },
 
   async getRaterUsername(): Promise<string> {
-    const response = await apiClient.get<string>('/concerts/rater');
-    return response.data;
+    const response = await apiClient.get<{ rater_username: string }>('/config');
+    return response.data.rater_username;
   },
 };

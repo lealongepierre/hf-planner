@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import settings
 from app.routers import auth, concerts, favorites, users
 
 app = FastAPI(
@@ -21,6 +22,11 @@ app.include_router(auth.router)
 app.include_router(concerts.router)
 app.include_router(favorites.router)
 app.include_router(users.router)
+
+
+@app.get("/api/v1/config")
+def get_config():
+    return {"rater_username": settings.RATER_USERNAME}
 
 
 @app.get("/")

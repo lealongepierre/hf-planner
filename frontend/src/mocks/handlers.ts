@@ -43,11 +43,12 @@ export const handlers = [
     });
   }),
 
-  // Concerts endpoints
-  http.get(`${API_URL}/concerts/rater`, async () => {
-    return HttpResponse.json('Wesker');
+  // Config endpoint
+  http.get(`${API_URL}/config`, async () => {
+    return HttpResponse.json({ rater_username: 'Wesker' });
   }),
 
+  // Concerts endpoints
   http.get(`${API_URL}/concerts`, async () => {
     return HttpResponse.json([
       {

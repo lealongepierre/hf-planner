@@ -15,11 +15,6 @@ class RatingUpdate(BaseModel):
     rating: int | None = Field(default=None, ge=0, le=20)
 
 
-@router.get("/rater", response_model=str)
-def get_rater_username():
-    return settings.RATER_USERNAME
-
-
 @router.get("", response_model=list[ConcertResponse])
 def get_concerts(
     day: str | None = Query(None, description="Filter by festival day"),
