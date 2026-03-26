@@ -156,4 +156,61 @@ describe('FavoritesPage', () => {
     expect(screen.getByText('My Favorites')).toBeInTheDocument();
     expect(screen.getByText('Your favorite concerts for the festival')).toBeInTheDocument();
   });
+
+  it('test_rating_column_is_displayed', async () => {
+    renderWithUserProvider(<FavoritesPage />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading favorites...')).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Wesker's rating")).toBeInTheDocument(); // matches mock rater "Wesker"
+  });
+
+  it('test_unrated_concert_shows_dash_for_non_wesker', async () => {
+    renderWithUserProvider(<FavoritesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Metallica')).toBeInTheDocument();
+    });
+
+    // Non-Wesker user sees "—/20" for null rating, no edit UI
+    expect(screen.getByText('—/20')).toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+
+  it('test_wesker_can_edit_rating_inline', async () => {
+    const user = userEvent.setup();
+
+    // Override /users/me to return Wesker
+    server.use(
+      http.get('http://localhost:8000/api/v1/users/me', async () => {
+        return HttpResponse.json({ id: 2, username: 'Wesker', favorites_public: false });
+      })
+    );
+
+    renderWithUserProvider(<FavoritesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Metallica')).toBeInTheDocument();
+    });
+
+    // Click on the rating cell to open inline edit
+    const ratingCell = screen.getByText('—/20');
+    await user.click(ratingCell);
+
+    // Input should appear
+    const input = screen.getByRole('spinbutton');
+    expect(input).toBeInTheDocument();
+
+    // Type a rating and confirm with Enter
+    await user.clear(input);
+    await user.type(input, '18');
+    await user.keyboard('{Enter}');
+
+    // Rating badge should update
+    await waitFor(() => {
+      expect(screen.getByText('18/20')).toBeInTheDocument();
+    });
+  });
 });

@@ -53,10 +53,7 @@ def test_user_fixture(session: Session):
     )
     session.add(user)
     session.commit()
-    session.flush()
     session.refresh(user)
-    session.expunge(user)
-    session.add(user)
     return user
 
 
@@ -65,6 +62,28 @@ def auth_headers_fixture(client: TestClient, test_user: User):
     response = client.post(
         "/api/v1/auth/signin",
         json={"username": "testuser", "password": "testpassword123"},
+    )
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(name="wesker_user")
+def wesker_user_fixture(session: Session):
+    user = User(
+        username="Wesker",
+        hashed_password=get_password_hash("weskerpassword123"),
+    )
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+
+@pytest.fixture(name="wesker_auth_headers")
+def wesker_auth_headers_fixture(client: TestClient, wesker_user: User):
+    response = client.post(
+        "/api/v1/auth/signin",
+        json={"username": "Wesker", "password": "weskerpassword123"},
     )
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
