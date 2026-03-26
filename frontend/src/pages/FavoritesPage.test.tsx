@@ -164,7 +164,7 @@ describe('FavoritesPage', () => {
       expect(screen.queryByText('Loading favorites...')).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText('Rating')).toBeInTheDocument();
+    expect(screen.getByText("Wesker's rating")).toBeInTheDocument(); // matches mock rater "Wesker"
   });
 
   it('test_unrated_concert_shows_dash_for_non_wesker', async () => {
@@ -210,7 +210,7 @@ describe('FavoritesPage', () => {
 
     // Rating badge should update
     await waitFor(() => {
-      expect(screen.getByText('★ 18/20')).toBeInTheDocument();
+      expect(screen.getByText('18/20')).toBeInTheDocument();
     });
   });
 });

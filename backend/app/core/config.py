@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
     SIGNUP_ACCESS_CODE: str | None = None
+    RATER_USERNAME: str = "Wesker"
 
 
 settings = Settings()  # type: ignore[call-arg]

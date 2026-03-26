@@ -44,6 +44,10 @@ export const handlers = [
   }),
 
   // Concerts endpoints
+  http.get(`${API_URL}/concerts/rater`, async () => {
+    return HttpResponse.json('Wesker');
+  }),
+
   http.get(`${API_URL}/concerts`, async () => {
     return HttpResponse.json([
       {

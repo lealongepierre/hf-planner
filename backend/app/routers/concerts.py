@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
+from app.core.config import settings
 from app.core.dependencies import get_current_user
 from app.database.connection import get_session
 from app.models import Concert, User
@@ -9,11 +10,14 @@ from app.schemas.concert import ConcertResponse
 
 router = APIRouter(prefix="/api/v1/concerts", tags=["Concerts"])
 
-_RATER_USERNAME = "lea"
-
 
 class RatingUpdate(BaseModel):
     rating: int | None = Field(default=None, ge=0, le=20)
+
+
+@router.get("/rater", response_model=str)
+def get_rater_username():
+    return settings.RATER_USERNAME
 
 
 @router.get("", response_model=list[ConcertResponse])
@@ -58,7 +62,7 @@ def update_concert_rating(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
-    if current_user.username != _RATER_USERNAME:
+    if current_user.username != settings.RATER_USERNAME:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
     concert = session.get(Concert, concert_id)

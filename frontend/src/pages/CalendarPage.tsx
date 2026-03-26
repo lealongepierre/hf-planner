@@ -20,6 +20,7 @@ export function CalendarPage() {
   const [users, setUsers] = useState<UserListResponse[]>([]);
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<Set<string>>(new Set());
   const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [raterUsername, setRaterUsername] = useState<string>('');
   const [friendsPopup, setFriendsPopup] = useState<{ concertId: number; bandName: string } | null>(null);
   const [concertInfoPopup, setConcertInfoPopup] = useState<{ bandName: string; startTime: string; endTime: string; stage: string; rating: number | null } | null>(null);
 
@@ -28,6 +29,7 @@ export function CalendarPage() {
     loadFavorites();
     loadUsers();
     loadCurrentUser();
+    concertsApi.getRaterUsername().then(setRaterUsername).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -565,7 +567,7 @@ export function CalendarPage() {
                                       >
                                         {isFavorite ? '⭐' : '☆'}
                                       </button>
-                                      {currentUsername === 'lea' && concert.rating !== null && (
+                                      {raterUsername !== '' && currentUsername === raterUsername && concert.rating !== null && (
                                         <div className={`text-xs font-medium ${isFavorite ? 'text-yellow-300' : 'text-yellow-600'}`}>
                                           {concert.rating}/20
                                         </div>
@@ -722,7 +724,7 @@ export function CalendarPage() {
                                                       ☆
                                                     </button>
                                                   )}
-                                                  {currentUsername === 'lea' && concert.rating !== null && (
+                                                  {raterUsername !== '' && currentUsername === raterUsername && concert.rating !== null && (
                                                     <div className="text-xs font-medium text-yellow-300">
                                                       {concert.rating}/20
                                                     </div>
@@ -855,7 +857,7 @@ export function CalendarPage() {
                                               ⭐
                                             </button>
                                           )}
-                                          {currentUsername === 'lea' && concert.rating !== null && (
+                                          {raterUsername !== '' && currentUsername === raterUsername && concert.rating !== null && (
                                             <div className="text-xs font-medium text-yellow-300">
                                               {concert.rating}/20
                                             </div>
@@ -976,7 +978,7 @@ export function CalendarPage() {
               <div className="flex items-center space-x-3 text-gray-700">
                 <span className="text-lg">🎯</span>
                 <div>
-                  <p className="text-sm text-gray-500">Wesker's rating</p>
+                  <p className="text-sm text-gray-500">{raterUsername ? `${raterUsername}'s rating` : 'Rating'}</p>
                   <p className="font-medium">
                     {concertInfoPopup.rating !== null ? `${concertInfoPopup.rating}/20` : 'Not yet rated'}
                   </p>

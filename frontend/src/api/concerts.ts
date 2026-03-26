@@ -16,4 +16,9 @@ export const concertsApi = {
     const response = await apiClient.patch<Concert>(`/concerts/${id}/rating`, { rating });
     return response.data;
   },
+
+  async getRaterUsername(): Promise<string> {
+    const response = await apiClient.get<string>('/concerts/rater');
+    return response.data;
+  },
 };

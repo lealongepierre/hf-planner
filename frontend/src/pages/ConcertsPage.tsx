@@ -17,8 +17,9 @@ export function ConcertsPage() {
   const [favoriteConcertIds, setFavoriteConcertIds] = useState<Set<number>>(new Set());
   const [editingRatingId, setEditingRatingId] = useState<number | null>(null);
   const [ratingInput, setRatingInput] = useState('');
+  const [raterUsername, setRaterUsername] = useState('');
   const { username } = useUser();
-  const isWesker = username === 'lea';
+  const isRater = username !== '' && username === raterUsername;
 
   const loadConcerts = async () => {
     setLoading(true);
@@ -45,6 +46,10 @@ export function ConcertsPage() {
       console.error('Failed to load favorites:', err);
     }
   };
+
+  useEffect(() => {
+    concertsApi.getRaterUsername().then(setRaterUsername).catch(() => {});
+  }, []);
 
   useEffect(() => {
     loadConcerts();
@@ -177,7 +182,7 @@ export function ConcertsPage() {
                       Stage
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Wesker's rating
+                      {raterUsername ? `${raterUsername}'s rating` : 'Rating'}
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Actions</span>
@@ -200,7 +205,7 @@ export function ConcertsPage() {
                         {concert.stage}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {isWesker && editingRatingId === concert.id ? (
+                        {isRater && editingRatingId === concert.id ? (
                           <div className="flex items-center gap-1">
                             <input
                               type="number"
@@ -220,9 +225,9 @@ export function ConcertsPage() {
                           </div>
                         ) : (
                           <span
-                            className={isWesker ? 'cursor-pointer hover:text-indigo-600' : ''}
-                            onClick={isWesker ? () => { setEditingRatingId(concert.id); setRatingInput(concert.rating !== null ? String(concert.rating) : ''); } : undefined}
-                            title={isWesker ? 'Click to edit rating' : undefined}
+                            className={isRater ? 'cursor-pointer hover:text-indigo-600' : ''}
+                            onClick={isRater ? () => { setEditingRatingId(concert.id); setRatingInput(concert.rating !== null ? String(concert.rating) : ''); } : undefined}
+                            title={isRater ? 'Click to edit rating' : undefined}
                           >
                             {concert.rating !== null ? `${concert.rating}/20` : <span className="text-gray-300">—/20</span>}
                           </span>
