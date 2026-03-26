@@ -42,6 +42,7 @@ services:
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-10080}
       SIGNUP_ACCESS_CODE: ${SIGNUP_ACCESS_CODE:-}
+      RATER_USERNAME: ${RATER_USERNAME:-Wesker}
     depends_on:
       postgres:
         condition: service_healthy
