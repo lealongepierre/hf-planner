@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlmodel import Session, select
+from sqlmodel import Session, func, select
 
 from app.core.config import settings
 from app.core.dependencies import get_current_user
@@ -31,7 +31,7 @@ def get_concerts(
     if stage:
         statement = statement.where(Concert.stage == stage)
 
-    statement = statement.order_by(Concert.band_name)
+    statement = statement.order_by(func.lower(Concert.band_name))
 
     concerts = session.exec(statement).all()
     return concerts
