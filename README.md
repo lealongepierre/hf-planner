@@ -52,6 +52,20 @@ backend/
 └── .env                # Environment variables
 ```
 
+## ⚡ Quick Local Setup
+
+> **Prerequisites:** Docker and [Just](https://github.com/casey/just)
+
+```bash
+just docker-up    # start all services
+just db-migrate   # run migrations
+just db-seed      # load concert data
+```
+
+Then open **http://localhost** — sign up with any username/password, no access code required.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
