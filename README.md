@@ -53,14 +53,26 @@ backend/
 └── .env                # Environment variables
 ```
 
+## ⚡ Quick Local Setup
+
+> **Prerequisites:** Docker and [Just](https://github.com/casey/just)
+
+```bash
+just docker-up    # start all services
+just db-migrate   # run migrations
+just db-seed      # load concert data
+```
+
+Then open **http://localhost** — sign up with any username/password, no access code required.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.12+
-- Docker and Docker Compose (for PostgreSQL)
-- Poetry (Python package manager)
-- Just (command runner - optional but recommended)
+- Docker and Docker Compose
+- [Just](https://github.com/casey/just) (command runner)
 
 ### Installation
 
@@ -70,62 +82,37 @@ git clone <repository-url>
 cd hf-planner
 ```
 
-2. Start the PostgreSQL database:
+2. Start all services (backend, frontend, database):
 ```bash
-docker-compose up -d
+just docker-up
 ```
 
-3. Install backend dependencies:
+3. Run database migrations and seed data:
 ```bash
-cd backend
-poetry install --no-root
+just db-migrate
+just db-seed
 ```
 
-4. Run database migrations:
+The app is now running at http://localhost (frontend) and http://localhost:8000 (backend API).
+
+### Starting from scratch
+
+To wipe everything and start clean:
 ```bash
-poetry run alembic upgrade head
+just docker-clean  # removes all containers and volumes
+just docker-up
+just db-migrate
+just db-seed
 ```
 
-5. Seed the database with sample concert data:
-```bash
-poetry run python -m app.utils.seed
-```
-
-6. Start the development server:
-```bash
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### Using Just Commands (Recommended)
-
-If you have [Just](https://github.com/casey/just) installed:
+### Other useful commands
 
 ```bash
-cd backend
-
-# Start dev server
-just run
-
-# Run migrations
-just migrate
-
-# Create new migration
-just make-migration "description"
-
-# Seed database
-just seed
-
-# Run tests
-just test
-
-# Format code
-just format
-
-# Lint code
-just lint
-
-# Reset database
-just reset-db
+just docker-down      # stop all services
+just docker-logs      # view logs for all services
+just db-reset         # reset database and reseed
+just test-backend     # run backend tests
+just test-frontend    # run frontend tests
 ```
 
 ## API Documentation
