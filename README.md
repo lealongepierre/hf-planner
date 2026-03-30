@@ -17,6 +17,13 @@ A web application for planning your Hellfest 2026 concert attendance.
 - Overlay friends' favorites on the calendar with a color legend
 - One designated user (configurable via `RATER_USERNAME`) can assign a score (0–20) to each concert, visible to all users on the concerts list, favorites, and calendar views
 
+## Experimentation
+
+For learning purposes, this repo contains two deployment explorations that are not intended for production use:
+
+- **Cloud Run** — the `deploy/cloud-run` branch contains a Cloud Run deployment setup (not to be merged into main)
+- **Kubernetes** — the `k8s/` directory contains Kubernetes manifests, also kept for reference only
+
 ## Roadmap
 
 - Let users delete their account
