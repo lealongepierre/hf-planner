@@ -42,6 +42,10 @@ For learning purposes, this repo contains two deployment explorations that are n
 - JWT - Authentication
 - Poetry - Dependency management
 
+**Frontend:**
+- React 19 with TypeScript
+- Vite - Build tool and dev server
+
 ## Project Structure
 
 ```
@@ -55,9 +59,18 @@ backend/
 │   ├── utils/          # Utility scripts (seed data)
 │   └── main.py         # FastAPI application
 ├── alembic/            # Database migrations
-├── pyproject.toml      # Poetry dependencies
-├── justfile            # Common commands
-└── .env                # Environment variables
+└── pyproject.toml      # Poetry dependencies
+frontend/
+├── src/
+│   ├── api/            # API client functions
+│   ├── components/     # Reusable UI components
+│   ├── contexts/       # React contexts
+│   ├── hooks/          # Custom React hooks
+│   ├── pages/          # Page components
+│   ├── types/          # TypeScript types
+│   └── utils/          # Utility functions
+└── package.json
+justfile                # Common commands
 ```
 
 ## ⚡ Quick Local Setup
@@ -158,10 +171,12 @@ Once the server is running, visit:
 ### Concert
 - id (Primary Key)
 - band_name
-- day (Friday, Saturday, Sunday)
+- day (Thursday, Friday, Saturday, Sunday)
+- festival_day (optional override for the display day)
 - start_time
 - end_time
 - stage (Mainstage 1, Mainstage 2, The Altar, The Warzone, The Temple, etc.)
+- rating (optional, 0–20, set by the designated rater)
 
 ### Favorite
 - id (Primary Key)
@@ -189,8 +204,8 @@ RATER_USERNAME=Wesker        # username allowed to set concert ratings
 ### Running Tests
 
 ```bash
-cd backend
-poetry run pytest
+just test-backend
+just test-frontend
 ```
 
 ## VM + Docker Compose Deployment
