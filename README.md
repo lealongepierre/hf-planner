@@ -56,10 +56,8 @@ backend/
 
 ### Prerequisites
 
-- Python 3.12+
-- Docker and Docker Compose (for PostgreSQL)
-- Poetry (Python package manager)
-- Just (command runner - optional but recommended)
+- Docker and Docker Compose
+- [Just](https://github.com/casey/just) (command runner)
 
 ### Installation
 
@@ -69,60 +67,37 @@ git clone <repository-url>
 cd hf-planner
 ```
 
-2. Start the PostgreSQL database:
+2. Start all services (backend, frontend, database):
 ```bash
-docker-compose up -d
-```
-
-3. Install backend dependencies:
-```bash
-cd backend
-poetry install --no-root
-```
-
-4. Run database migrations:
-```bash
-poetry run alembic upgrade head
-```
-
-5. Seed the database with sample concert data:
-```bash
-poetry run python -m app.utils.seed
-```
-
-6. Start the development server:
-```bash
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### Using Just Commands (Recommended)
-
-If you have [Just](https://github.com/casey/just) installed, run everything from the project root:
-
-```bash
-# Start all services (backend, frontend, database) via Docker Compose
 just docker-up
+```
 
-# Start backend dev server (hot reload)
-just dev-backend
-
-# Start frontend dev server (hot reload)
-just dev-frontend
-
-# Run database migrations
+3. Run database migrations and seed data:
+```bash
 just db-migrate
-
-# Seed database with sample data
 just db-seed
+```
 
-# Run backend tests
-just test-backend
+The app is now running at http://localhost:5173 (frontend) and http://localhost:8000 (backend).
 
-# Run frontend tests
-just test-frontend
+### Starting from scratch
 
-# Stop all services
-just docker-down
+To wipe everything and start clean:
+```bash
+just docker-clean  # removes all containers and volumes
+just docker-up
+just db-migrate
+just db-seed
+```
+
+### Other useful commands
+
+```bash
+just docker-down      # stop all services
+just docker-logs      # view logs for all services
+just db-reset         # reset database and reseed
+just test-backend     # run backend tests
+just test-frontend    # run frontend tests
 ```
 
 ## API Documentation
