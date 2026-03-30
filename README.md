@@ -78,7 +78,7 @@ just db-migrate
 just db-seed
 ```
 
-The app is now running at http://localhost:5173 (frontend) and http://localhost:8000 (backend).
+The app is now running at http://localhost (frontend) and http://localhost:8000 (backend API).
 
 ### Starting from scratch
 
