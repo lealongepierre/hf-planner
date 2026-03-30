@@ -97,34 +97,32 @@ poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### Using Just Commands (Recommended)
 
-If you have [Just](https://github.com/casey/just) installed:
+If you have [Just](https://github.com/casey/just) installed, run everything from the project root:
 
 ```bash
-cd backend
+# Start all services (backend, frontend, database) via Docker Compose
+just docker-up
 
-# Start dev server
-just run
+# Start backend dev server (hot reload)
+just dev-backend
 
-# Run migrations
-just migrate
+# Start frontend dev server (hot reload)
+just dev-frontend
 
-# Create new migration
-just make-migration "description"
+# Run database migrations
+just db-migrate
 
-# Seed database
-just seed
+# Seed database with sample data
+just db-seed
 
-# Run tests
-just test
+# Run backend tests
+just test-backend
 
-# Format code
-just format
+# Run frontend tests
+just test-frontend
 
-# Lint code
-just lint
-
-# Reset database
-just reset-db
+# Stop all services
+just docker-down
 ```
 
 ## API Documentation
