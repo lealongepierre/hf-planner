@@ -1417,7 +1417,7 @@ concerts_data = [
         "day": "Sunday",
         "festival_day": "Sunday",
         "start_time": time(17, 45),
-        "end_time": time(18, 30),
+        "end_time": time(18, 35),
         "stage": "Altar",
     },
     {
