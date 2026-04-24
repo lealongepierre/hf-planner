@@ -1405,7 +1405,7 @@ concerts_data = [
         "stage": "Altar",
     },
     {
-        "band_name": "Six Feet Under",
+        "band_name": "Suicidal Angels",
         "day": "Sunday",
         "festival_day": "Sunday",
         "start_time": time(16, 0),
@@ -1413,7 +1413,7 @@ concerts_data = [
         "stage": "Altar",
     },
     {
-        "band_name": "Forbidden",
+        "band_name": "Six Feet Under",
         "day": "Sunday",
         "festival_day": "Sunday",
         "start_time": time(17, 45),
