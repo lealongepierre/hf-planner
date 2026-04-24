@@ -4,7 +4,7 @@ A web application for planning your Hellfest 2026 concert attendance.
 
 **Live:** https://nessie-cooper.fr (this is my cat's name)
 
-> **Note:** ⚠️ Right now, concerts and concert times are those that were published on March 24th, 2026. They will be updated as soon as possible in the case of changes.
+> **Note:** ⚠️ Lineup updated on April 24th, 2026: FORBIDDEN cancelled, replaced by SUICIDAL ANGELS (SUN | ALTAR | 4:00 PM). SIX FEET UNDER rescheduled to 5:45 PM.
 
 ## Features
 
