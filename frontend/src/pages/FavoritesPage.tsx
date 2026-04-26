@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { concertsApi, favoritesApi } from '../api';
 import type { Concert } from '../types';
 import { useUser } from '../contexts/UserContext';
+import { PushSettings } from '../components/PushSettings';
 import type { AxiosError } from 'axios';
 
 interface ApiErrorResponse {
@@ -190,6 +191,10 @@ export function FavoritesPage() {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <PushSettings />
       </div>
     </div>
   );

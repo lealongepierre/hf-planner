@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authUtils } from '../utils/auth';
 import { useUser } from '../contexts/UserContext';
+import { InstallPrompt } from './InstallPrompt';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm pt-[env(safe-area-inset-top)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -82,13 +83,15 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content — add bottom padding on mobile to avoid overlap with bottom nav */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pb-20 sm:pb-6">
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-6">
         {children}
       </main>
 
+      <InstallPrompt />
+
       {/* Bottom Navigation — mobile only */}
       {isAuthenticated && (
-        <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+        <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-[env(safe-area-inset-bottom)]">
           <div className="flex justify-around">
             {navLinks.map(({ to, label, icon }) => {
               const isActive = location.pathname === to;

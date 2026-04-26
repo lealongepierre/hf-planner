@@ -11,5 +11,9 @@ class Settings(BaseSettings):
     SIGNUP_ACCESS_CODE: str | None = None
     RATER_USERNAME: str = "Wesker"
 
+    VAPID_PUBLIC_KEY: str | None = None
+    VAPID_PRIVATE_KEY: str | None = None
+    VAPID_SUBJECT: str = "mailto:maximilien.baudry@akeneo.com"
+
 
 settings = Settings()  # type: ignore[call-arg]
