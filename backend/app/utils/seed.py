@@ -462,7 +462,7 @@ concerts_data = [
     },
     # VALLEY
     {
-        "band_name": "Draguinov",
+        "band_name": "Dragunov",
         "day": "Friday",
         "festival_day": "Friday",
         "start_time": time(10, 30),
@@ -1507,7 +1507,6 @@ concerts_data = [
 # Used by update_concert_times to handle name corrections
 _name_corrections: dict[tuple[str, str, str], str] = {
     ("Thursday", "Temple", "Skåld"): "Skáld",
-    ("Friday", "Valley", "Draguinov"): "Dragunov",
     ("Friday", "Temple", "Einherjer"): "Einherjær",
     ("Saturday", "Altar", "DVRK"): "DVRX",
     ("Saturday", "Temple", "Vigljós"): "Viglios",
