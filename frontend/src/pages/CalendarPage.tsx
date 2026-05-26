@@ -401,6 +401,14 @@ export function CalendarPage() {
             View concerts by day and stage
           </p>
         </div>
+        <div className="mt-4 sm:mt-0 print-hidden">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            🖨️ Print
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -409,7 +417,7 @@ export function CalendarPage() {
         </div>
       )}
 
-      <div className="mt-6 flex gap-6 items-end flex-wrap">
+      <div className="mt-6 flex gap-6 items-end flex-wrap print-hidden">
         <div>
           <label htmlFor="view-select" className="block text-sm font-medium text-gray-700 mb-2">
             View
@@ -467,7 +475,7 @@ export function CalendarPage() {
       </div>
 
       {view === 'favorites' && selectedFriendUsernames.size > 0 && (
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap gap-3 print-hidden">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-indigo-500 flex-shrink-0" />
             <span className="text-sm text-gray-700">{currentUsername || 'You'}</span>
@@ -485,7 +493,7 @@ export function CalendarPage() {
       )}
 
       {view === 'by-stage' && selectedDay && (
-        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
+        <div className="mt-8 overflow-auto print-calendar-container" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
             <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
               <div className="flex">
@@ -559,7 +567,7 @@ export function CalendarPage() {
                                         {concert.start_time.slice(0, 5)} - {concert.end_time.slice(0, 5)}
                                       </div>
                                     </div>
-                                    <div className="flex flex-col items-center flex-shrink-0">
+                                    <div className="flex flex-col items-center flex-shrink-0 print-hidden">
                                       <button
                                         onClick={(e) => handleToggleFavorite(e, concert.id)}
                                         className="text-lg hover:scale-125 transition-transform cursor-pointer"
@@ -578,7 +586,7 @@ export function CalendarPage() {
                                   {/* Friend indicator */}
                                   {friendsList.length > 0 && (
                                     <div
-                                      className="absolute bottom-1 right-1 text-xs text-gray-400 cursor-pointer hover:text-gray-600"
+                                      className="absolute bottom-1 right-1 text-xs text-gray-400 cursor-pointer hover:text-gray-600 print-hidden"
                                       onClick={(e) => handleShowFriendsPopup(e, concert.id, concert.band_name)}
                                     >
                                       👥 {friendsDisplay.text}
@@ -599,7 +607,7 @@ export function CalendarPage() {
       )}
 
       {view === 'favorites' && (
-        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
+        <div className="mt-8 overflow-auto print-calendar-container" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
             <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
               <div className="flex">
@@ -761,7 +769,7 @@ export function CalendarPage() {
       )}
 
       {view === 'shared-favorites' && (
-        <div className="mt-8 overflow-auto" style={{ maxHeight: '80vh' }}>
+        <div className="mt-8 overflow-auto print-calendar-container" style={{ maxHeight: '80vh' }}>
           <div className="inline-block align-middle" style={{ maxWidth: '100%' }}>
             <div className="relative" style={{ minHeight: '1200px', maxWidth: '1200px' }}>
               <div className="flex">
@@ -906,7 +914,7 @@ export function CalendarPage() {
       {/* Friends Popup Modal */}
       {friendsPopup && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 print-hidden"
           onClick={() => setFriendsPopup(null)}
         >
           <div
@@ -940,7 +948,7 @@ export function CalendarPage() {
       {/* Concert Info Popup Modal */}
       {concertInfoPopup && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 print-hidden"
           onClick={() => setConcertInfoPopup(null)}
         >
           <div

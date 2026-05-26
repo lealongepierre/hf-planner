@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Remove scroll constraints so full calendar renders */
+  .print-calendar-container {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Preserve background colors */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Remove shadows and transitions */
+  * {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  body {
+    background: white;
+  }
+}
