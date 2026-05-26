@@ -640,7 +640,7 @@ concerts_data = [
         "stage": "Temple",
     },
     {
-        "band_name": "Trelldom",
+        "band_name": "MØL",
         "day": "Friday",
         "festival_day": "Friday",
         "start_time": time(16, 45),
@@ -706,7 +706,7 @@ concerts_data = [
         "stage": "Mainstage 1",
     },
     {
-        "band_name": "Enhancer",
+        "band_name": "Sidilarsen",
         "day": "Saturday",
         "festival_day": "Saturday",
         "start_time": time(15, 25),
@@ -714,7 +714,7 @@ concerts_data = [
         "stage": "Mainstage 1",
     },
     {
-        "band_name": "Static-X",
+        "band_name": "Enhancer",
         "day": "Saturday",
         "festival_day": "Saturday",
         "start_time": time(16, 55),

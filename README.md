@@ -4,7 +4,7 @@ A web application for planning your Hellfest 2026 concert attendance.
 
 **Live:** https://nessie-cooper.fr (this is my cat's name)
 
-> **Note:** ⚠️ Lineup updated on April 24th, 2026: FORBIDDEN cancelled, replaced by SUICIDAL ANGELS (SUN | ALTAR | 4:00 PM). SIX FEET UNDER rescheduled to 5:45 PM.
+> **Note:** ⚠️ Lineup last updated on May 26th, 2026: STATIC-X and TRELLDOM cancelled. SIDILARSEN replaces STATIC-X (SAT | MS1 | 15:25), ENHANCER rescheduled to 16:55, MØL replaces TRELLDOM (FRI | TEMPLE | 16:45).
 
 ## Features
 
