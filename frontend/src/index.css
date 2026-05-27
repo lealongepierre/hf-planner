@@ -1,1 +1,86 @@
 @import "tailwindcss";
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .print-only {
+    display: inline !important;
+  }
+
+  /* Remove scroll constraints so full calendar renders */
+  .print-calendar-container {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Preserve background colors */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Remove shadows and transitions */
+  * {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  body, html {
+    background: white;
+    min-height: unset !important;
+    height: auto !important;
+  }
+
+  /* Remove min-height from app root that causes empty pages */
+  .min-h-screen {
+    min-height: unset !important;
+  }
+
+  /* Remove sticky positioning to prevent header row repeating on extra pages */
+  .sticky {
+    position: static !important;
+  }
+
+  /* Force calendar container to flow normally */
+  div.print-calendar-container {
+    margin-top: 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    display: block !important;
+  }
+
+  /* Fix inline-block inner div that causes pagination issues */
+  div.print-calendar-container > div {
+    display: block !important;
+    max-width: none !important;
+  }
+
+  /* Smaller fonts for concert blocks */
+  .print-calendar-container .font-semibold {
+    font-size: 10px !important;
+  }
+
+  .print-calendar-container .text-xs {
+    font-size: 9px !important;
+  }
+
+  .print-calendar-container .text-sm {
+    font-size: 10px !important;
+  }
+
+  /* Tighter padding in concert blocks */
+  .print-calendar-container .p-2 {
+    padding: 2px !important;
+  }
+}
