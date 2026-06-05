@@ -39,7 +39,7 @@ concerts_data = [
         "band_name": "Papa Roach",
         "day": "Thursday",
         "festival_day": "Thursday",
-        "start_time": time(21, 20),
+        "start_time": time(21, 15),
         "end_time": time(22, 25),
         "stage": "Mainstage 1",
     },
@@ -47,8 +47,8 @@ concerts_data = [
         "band_name": "Bring Me The Horizon",
         "day": "Thursday",
         "festival_day": "Thursday",
-        "start_time": time(23, 35),
-        "end_time": time(0, 50),
+        "start_time": time(23, 45),
+        "end_time": time(1, 15),
         "stage": "Mainstage 1",
     },
     # MAINSTAGE 2
@@ -73,7 +73,7 @@ concerts_data = [
         "day": "Thursday",
         "festival_day": "Thursday",
         "start_time": time(20, 0),
-        "end_time": time(21, 15),
+        "end_time": time(21, 10),
         "stage": "Mainstage 2",
     },
     {
@@ -88,8 +88,8 @@ concerts_data = [
         "band_name": "Alestorm",
         "day": "Friday",
         "festival_day": "Thursday",
-        "start_time": time(0, 55),
-        "end_time": time(1, 45),
+        "start_time": time(1, 20),
+        "end_time": time(2, 10),
         "stage": "Mainstage 2",
     },
     # WARZONE
@@ -129,8 +129,8 @@ concerts_data = [
         "band_name": "Social Distortion",
         "day": "Friday",
         "festival_day": "Thursday",
-        "start_time": time(0, 30),
-        "end_time": time(1, 30),
+        "start_time": time(1, 0),
+        "end_time": time(2, 0),
         "stage": "Warzone",
     },
     # VALLEY
@@ -170,8 +170,8 @@ concerts_data = [
         "band_name": "Kadavar",
         "day": "Thursday",
         "festival_day": "Thursday",
-        "start_time": time(23, 15),
-        "end_time": time(0, 25),
+        "start_time": time(23, 45),
+        "end_time": time(0, 55),
         "stage": "Valley",
     },
     # TEMPLE
@@ -211,8 +211,8 @@ concerts_data = [
         "band_name": "Feuerschwanz",
         "day": "Friday",
         "festival_day": "Thursday",
-        "start_time": time(0, 30),
-        "end_time": time(1, 30),
+        "start_time": time(1, 0),
+        "end_time": time(2, 0),
         "stage": "Temple",
     },
     # ALTAR
@@ -252,8 +252,8 @@ concerts_data = [
         "band_name": "Igorrr",
         "day": "Thursday",
         "festival_day": "Thursday",
-        "start_time": time(23, 15),
-        "end_time": time(0, 25),
+        "start_time": time(23, 45),
+        "end_time": time(0, 55),
         "stage": "Altar",
     },
     # ===================== FRIDAY 19 JUNE =====================
@@ -810,14 +810,6 @@ concerts_data = [
         "end_time": time(23, 5),
         "stage": "Mainstage 2",
     },
-    {
-        "band_name": "Volbeat",
-        "day": "Sunday",
-        "festival_day": "Saturday",
-        "start_time": time(0, 45),
-        "end_time": time(2, 0),
-        "stage": "Mainstage 2",
-    },
     # WARZONE
     {
         "band_name": "False Reality",
@@ -1106,9 +1098,9 @@ concerts_data = [
         "band_name": "Behemoth",
         "day": "Sunday",
         "festival_day": "Saturday",
-        "start_time": time(0, 55),
-        "end_time": time(2, 0),
-        "stage": "Temple",
+        "start_time": time(0, 35),
+        "end_time": time(1, 50),
+        "stage": "Mainstage 2",
     },
     # ===================== SUNDAY 21 JUNE =====================
     # MAINSTAGE 1
