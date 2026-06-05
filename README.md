@@ -4,7 +4,7 @@ A web application for planning your Hellfest 2026 concert attendance.
 
 **Live:** https://nessie-cooper.fr (this is my cat's name)
 
-> **Note:** ⚠️ Lineup last updated on May 27th, 2026: VOLBEAT cancelled. BEHEMOTH moved to MS2 (THU | MS2 | 00:35). Several Thursday time adjustments (Papa Roach, BMTH, Deep Purple, Alestorm, Social Distortion, Kadavar, Feuerschwanz, Igorrr).
+> **Note:** ⚠️ Lineup last updated on June 5th, 2026: VOLBEAT cancelled. BEHEMOTH moved to MS2 (THU | MS2 | 00:35). Several Thursday time adjustments (Papa Roach, BMTH, Deep Purple, Alestorm, Social Distortion, Kadavar, Feuerschwanz, Igorrr).
 
 ## Features
 
