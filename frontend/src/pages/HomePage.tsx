@@ -31,9 +31,7 @@ export function HomePage() {
               "Demain, ça commence !"
             ) : daysUntil > 0 ? (
               `${daysUntil} jours avant le festival`
-            ) : (
-              "Le festival est terminé"
-            )}
+            ) : null}
           </div>
           <div className="mt-6 text-xl text-gray-600">
             18 - 21 juin 2026
