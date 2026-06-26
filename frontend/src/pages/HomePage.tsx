@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
+import { getDaysUntilFestival, formatCountdown } from '../utils/festival';
 
 export function HomePage() {
   const [daysUntil, setDaysUntil] = useState<number>(0);
 
   useEffect(() => {
-    const calculateDaysUntil = () => {
-      const festivalDate = new Date('2026-06-18T00:00:00');
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const diffTime = festivalDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      setDaysUntil(diffDays);
-    };
+    const calculateDaysUntil = () => setDaysUntil(getDaysUntilFestival());
 
     calculateDaysUntil();
     const interval = setInterval(calculateDaysUntil, 1000 * 60 * 60);
@@ -30,7 +22,7 @@ export function HomePage() {
 
         <div className="bg-gradient-to-br from-red-50 to-gray-100 rounded-lg p-12 border-4 border-red-600 shadow-2xl">
           <div className="text-8xl md:text-9xl font-black text-red-600 mb-4 tracking-tight">
-            {daysUntil >= 0 ? `J-${daysUntil}` : `J+${Math.abs(daysUntil)}`}
+            {formatCountdown(daysUntil)}
           </div>
           <div className="text-2xl md:text-3xl text-gray-800 font-semibold">
             {daysUntil === 0 ? (
