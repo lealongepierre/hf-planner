@@ -30,15 +30,17 @@ export function HomePage() {
 
         <div className="bg-gradient-to-br from-red-50 to-gray-100 rounded-lg p-12 border-4 border-red-600 shadow-2xl">
           <div className="text-8xl md:text-9xl font-black text-red-600 mb-4 tracking-tight">
-            J-{daysUntil}
+            {daysUntil >= 0 ? `J-${daysUntil}` : `J+${Math.abs(daysUntil)}`}
           </div>
           <div className="text-2xl md:text-3xl text-gray-800 font-semibold">
             {daysUntil === 0 ? (
               "C'est aujourd'hui !"
             ) : daysUntil === 1 ? (
               "Demain, ça commence !"
-            ) : (
+            ) : daysUntil > 0 ? (
               `${daysUntil} jours avant le festival`
+            ) : (
+              "Le festival est terminé"
             )}
           </div>
           <div className="mt-6 text-xl text-gray-600">
